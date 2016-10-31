@@ -144,3 +144,33 @@ o	close-mid back rounded vowel
 ⁿ	nasal release
 ˡ	lateral release
 ̚	no audible release
+
+ˈ	primary stress
+ˌ	secondary stress
+ː	long
+ˑ	half-long
+̆	extra-short
+|	minor (foot) group
+||	major (intonational) group
+.	syllable break
+‿	linking (absence of a break)
+
+̋	extra-high tone (accent mark)
+˥	extra-high tone (Chao letter)
+́	high level tone (accent mark)
+˦	high leveltone (Chao letter)
+̄	mid level tone (accent mark)
+˧	mid level tone (Chao letter)
+̀	low level tone (accent mark)
+˨	lowlevel tone (Chao letter)
+̏	extra-low level tone (accent mark)
+˩	extra-low level tone (Chao letter)
+̌	rising contour tone (accent mark)
+̂	falling contour tone (accent mark)
+᷄	high rising contour tone (accent mark)
+᷅	low rising contour tone (accent mark)
+᷈	rising-falling contour tone (accent mark)
+ꜜ	downstep
+ꜛ	upstep
+↗	global rise
+↘	global fall
