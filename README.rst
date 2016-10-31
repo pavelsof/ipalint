@@ -14,7 +14,8 @@ You would want to use ipalint
 similar projects
 ================
 
-* `ipapy <https://pypi.python.org/pypi/ipapy>_`
+* `ipapy <https://pypi.python.org/pypi/ipapy>`_
+* `lingpy <http://lingpy.org/>`_
 
 
 licence
