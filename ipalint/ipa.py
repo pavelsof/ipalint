@@ -30,7 +30,7 @@ UnknownSymbol = namedtuple('UnknownSymbol', ['char', 'name'])
 
 
 
-class DatabaseError(ValueError):
+class IPADataError(ValueError):
 	"""
 	Raised when there is a problem with the IPA data file.
 	"""
@@ -38,21 +38,24 @@ class DatabaseError(ValueError):
 
 
 
-class Database:
+class Tokeniser:
 	"""
-	Knows how to the segmentise transcription strings into sequences of Segment
+	Knows how to the tokenise transcription strings into sequences of Symbol
 	named tuples.
 	"""
 	
-	def __init__(self, load=False):
+	def __init__(self, reporter):
 		"""
-		Constructor.
+		Constructor. Expects a Reporter instance to add the lint issues to.
+		Raises IPADataError if the IPA data cannot be loaded.
 		"""
 		self.log = logging.getLogger(__name__)
-		self.ipa = self._load_ipa(IPA_DATA_PATH)
+		self.rep = reporter
+		
+		self.ipa = self._load_ipa_data(IPA_DATA_PATH)
 	
 	
-	def _load_ipa(self, ipa_data_path):
+	def _load_ipa_data(self, ipa_data_path):
 		"""
 		Loads and returns the {symbol: name} dictionary stored in the
 		data/ipa.tsv file.
@@ -67,13 +70,13 @@ class Database:
 						continue
 					
 					if line[0] in ipa:
-						raise DatabaseError('')
+						raise IPADataError('')
 					
 					ipa[line[0]] = line[1]
 		
 		except (IOError, ValueError) as err:
 			self.log.error(str(err))
-			raise DatabaseError('Could not open the IPA data file')
+			raise IPADataError('Could not open the IPA data file')
 		
 		return ipa
 	

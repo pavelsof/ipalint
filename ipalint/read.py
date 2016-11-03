@@ -18,17 +18,19 @@ IPA_COL_NAMES = ['ipa', 'phon', 'transcription']
 
 class Reader:
 	"""
-	Knows how to read arbitrary csv/tsv data files (or at least as arbitrary as
+	Knows how to read arbitrary csv/tsv datasets (or at least as arbitrary as
 	csv.Sniffer can recognise).
 	"""
 	
 	def __init__(self, file_path, has_header=True, ipa_col=None):
 		"""
-		Constructor. Expects the path to the file to be read. The has_header
-		arg specifies whether the first line of the file will be ignored or
-		not. The ipa_col arg specifies which is the column of interest.
+		Constructor. Expects the path to the file to be read. Optional args:
+		
+		has_header: whether the first line of the file will be ignored or not;
+		ipa_col: the column from which to extract the IPA data.
 		"""
 		self.log = logging.getLogger(__name__)
+		self.reporter = reporter
 		
 		self.file_path = file_path
 		

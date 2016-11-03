@@ -38,6 +38,8 @@ setup(
 	packages = find_packages(),
 	install_requires = [],
 	
+	include_package_data = True,
+	
 	test_suite = 'ipalint.tests',
 	tests_require = ['hypothesis >= 3.5'],
 	

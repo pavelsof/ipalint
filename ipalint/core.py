@@ -58,16 +58,16 @@ class Core:
 	
 	def lint(self, dataset_path):
 		"""
-		Returns a Reporter instance.
+		Returns a Reporter instance that should contain all the issues found in
+		the dataset specified by the given file path.
 		"""
-		reader = Reader(dataset_path)
+		rep = Reporter()
 		
-		tokeniser = Tokeniser()
+		reader = Reader(dataset_path)
+		tokeniser = Tokeniser(rep)
 		
 		ipa_symbols = Counter()
 		unk_symbols = Counter()
-		
-		report = Reporter()
 		
 		for ipa_string in reader.gen_ipa_data():
 			sym, unk = tokeniser.tokenise(ipa_string)
@@ -75,5 +75,7 @@ class Core:
 				ipa_symbols[item] += 1
 			for item in unk:
 				unk_symbols[item] += 1
+		
+		return rep
 
 
