@@ -13,6 +13,13 @@ from ipalint.read import IPA_COL_NAMES, Reader
 
 
 
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
+
+HAWAIIAN_TSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.tsv')
+HAWAIIAN_CSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.csv')
+
+
+
 class ReaderTestCase(TestCase):
 	
 	def setUp(self):
@@ -58,9 +65,36 @@ class ReaderTestCase(TestCase):
 		res = []
 		
 		reader = Reader(file_path, has_header=False, ipa_col=d['col'])
-		for line in reader.gen_ipa_data():
-			res.append(line)
+		for datum in reader.gen_ipa_data():
+			res.append(datum)
 		
 		self.assertEqual(res, data)
+	
+	
+	def test_gen_ipa_data_hawaiian(self):
+		reader = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
+		data = [datum for datum in reader.gen_ipa_data()]
+		self.assertEqual(len(data), 246)
+		
+		self.assertEqual(data[0], 'lima')
+		self.assertEqual(data[209], '[\'o] au')
+		self.assertEqual(data[245], 'kaukani')
+		
+		# reader2 = Reader(HAWAIIAN_CSV_PATH, ipa_col=3)
+		# data2 = [datum for datum in reader2.gen_ipa_data()]
+		# self.assertEqual(data, data2)
+	
+	
+	def test_gen_ipa_data_error(self):
+		file_path = os.path.join(self.temp_dir.name, 'test')
+		
+		with open(file_path, 'w', newline='') as f:
+			writer = csv.writer(f, delimiter='\t')
+			writer.writerow(['a', 'b', 'c'])
+		
+		reader = Reader(file_path, has_header=False, ipa_col=3)
+		
+		with self.assertRaises(ValueError):
+			[datum for datum in reader.gen_ipa_data()]
 
 

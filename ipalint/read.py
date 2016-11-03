@@ -30,7 +30,6 @@ class Reader:
 		ipa_col: the column from which to extract the IPA data.
 		"""
 		self.log = logging.getLogger(__name__)
-		self.reporter = reporter
 		
 		self.file_path = file_path
 		
@@ -64,8 +63,14 @@ class Reader:
 		which the IPA column is. ValueError would be raised otherwise.
 		"""
 		'''sniffer = csv.Sniffer()
-		dialect = sniffer.sniff(f.read(1024*10))
-		f.seek(0)'''
+		
+		try:
+			dialect = sniffer.sniff(f.read(1024*10), delimiters=',\t')
+		except csv.Error as err:
+			self.log.error(str(err))
+			raise ValueError('Could not determine csv dialect')
+		else:
+			f.seek(0)'''
 		
 		reader = csv.reader(f, delimiter='\t')
 		
