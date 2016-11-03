@@ -2,13 +2,14 @@
 ipalint
 =======
 
-Linting IPA data since 2016.
+Checks your IPA data for errors. Also can fix some common issues.
 
 
-usage
+aloha
 =====
 
-You would want to use ipalint 
+This repo comes with a dataset of Hawaiian basic vocabulary taken from the
+Austronesian Basic Vocabulary Database.
 
 
 similar projects

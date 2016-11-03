@@ -1,3 +1,7 @@
+"""
+This module provides the code for reading the datasets which are to be linted.
+"""
+
 import csv
 import logging
 import os.path

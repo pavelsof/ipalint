@@ -1,0 +1,247 @@
+id	word_id	word	item	annotation	loan	cognacy	pmpcognacy
+52	1	hand	lima			1, 64	1
+409	2	left	hema			11	
+766	3	right	'ākau			5, 40	1
+1123	4	leg/foot	wāwae			1, 100	1
+1480	5	to walk	hele			6	
+1837	6	road/path	ala			1	1
+2194	7	to come	[hele] mai			1,42	1
+2551	8	to turn	wili			90	
+251536	8	to turn	huli			15	
+2908	9	to swim	'au			5	
+3265	10	dirty	lepo			9	
+71896	11	dust	'ehu			1	?
+71897	11	dust	'e'a			X	?
+3979	12	skin	'ili			1	1
+4336	13	back	kua			12	
+4693	14	belly	'ōpū			2	
+5050	15	bone	iwi			2,5	
+5407	16	intestines	na'au			12	
+5764	17	liver	ake			1	1
+6121	18	breast	ū			1	1
+6478	19	shoulder	po'ohiwi			8	
+6835	20	to know, be knowledgeable	'ike	from to see initially		12	
+7192	21	to think	mana'o	Haw has diacritics? - JCM		7	
+7549	22	to fear	maka'u			1	1
+7906	23	blood	koko			4	
+8263	24	head	po'o			10	
+8620	25	neck	'ā'ī			20	
+8977	26	hair	lauoho			40	
+9334	27	nose	ihu			1	1
+72757	28	to breathe	aho			9	
+72758	28	to breathe	hanu			11	
+10048	29	to sniff, smell	honi			9	
+10405	30	mouth	waha			1,8	1
+10762	31	tooth	niho			1	1
+11119	32	tongue	alelo			15	
+11476	33	to laugh	'aka			7	
+11833	34	to cry	uwē			38	
+251529	34	to cry	kani			1	
+12190	35	to vomit	lua'i			8,31	
+12547	36	to spit	pupuhi			15	
+251530	36	to spit	kuha			19,34?	
+12904	37	to eat	'ai			1, 44	1
+13261	38	to chew	mama			1	1
+13618	39	to cook	ho'omo'a				
+13975	40	to drink	inu			1	1
+14332	41	to bite	nahu			7	
+14689	42	to suck	omo			7	
+15046	43	ear	pepeiao				
+15403	44	to hear	ho'olono			1	1
+15760	45	eye	maka			1	1
+16117	46	to see	'ike	[<A]		1	1
+16474	47	to yawn	hāmama			19,28	
+16831	48	to sleep	moe			10	
+17188	49	to lie down	hina moe			6	
+17545	50	to dream	moe'uhane			7	
+251535	50	to dream	moemoeā			7,27	
+17902	51	to sit	noho			16	
+18259	52	to stand	ku			2	
+18616	53	person/human being	kanaka			1,66	1
+18973	54	man/male	kāne			1,11	1
+19330	55	woman/female	wahine			1,106, 116	1
+19687	56	child	keiki				
+20044	57	husband	kāne	54/55		14	
+20401	58	wife	wahine			5,68	
+20758	59	mother	makuahine			4	
+21115	60	father	makua kāne			1,9	
+21472	61	house	hale			14	
+21829	62	thatch/roof	ako			1	1
+22186	63	name	inoa			6	
+22543	64	to say	'ōlelo			11	
+22900	65	rope	kaula			9	
+23257	66	to tie up, fasten	hīki'i			12	
+23614	67	to sew	humuhumu				
+23971	68	needle	kui			66	
+24328	69	to hunt	hahai			6	
+24685	70	to shoot	pana			1	1
+25042	71	to stab, pierce	hou				
+25399	72	to hit	hahau			12	
+251531	72	to hit	ku'i	*t >k; *k >'-MW		8	
+25756	73	to steal	'aihue			5	
+26113	74	to kill	ho'omake			2	
+26470	75	to die, be dead	make			1	1
+26827	76	to live, be alive	ola			6	
+27184	77	to scratch	walu				
+75684	78	to cut, hack	'oki			9	
+75685	78	to cut, hack	moku			54, 14	
+27898	79	stick/wood	lā'au			1	1
+28255	80	to split	wāhi			4	
+28612	81	sharp	'oi			14,66	
+28969	82	dull, blunt	[kū]mūmū			10	
+29326	83	to work	hana			10	
+29683	84	to plant	kanu			2	1?
+76168	85	to choose	koho				
+76169	85	to choose	wae			10	
+76209	86	to grow	ulu				1
+76210	86	to grow	kupu			1	1
+76272	87	to swell	pehu			10	
+76273	87	to swell	hū			10	
+31111	88	to squeeze	'uwī				
+31468	89	to hold	ho'o'pa'a				
+247021	89	to hold	(hoʻo)paʻa				
+31825	90	to dig	'eli			1	1
+32182	91	to buy	kū'ai				
+76621	92	to open, uncover	wehe			1	
+76622	92	to open, uncover	weke			1	
+32896	93	to pound, beat	ku'i			2	1
+76722	94	to throw	nou				
+76723	94	to throw	ho'olei				
+33610	95	to fall	hā'ule				
+33967	96	dog	'īlio		Loan < Tua	7	
+34324	97	bird	manu			1	1
+34681	98	egg	hua[moa]			5	
+35038	99	feather	hulu			1	1
+35395	100	wing	'ēheu			1,58	
+35752	101	to fly	lele			11	
+36109	102	rat	'iole			12	
+36466	103	meat/flesh	'i'o			10	
+36823	104	fat/grease	momona			1,65	1
+37180	105	tail	huelo			10	
+37537	106	snake	naheka	Hebrew "nahas", snake (WOLD)	L		
+37894	107	worm (earthworm)	ko'e			7	
+38251	108	louse	'uku			1	1
+38608	109	mosquito	makika		L		
+38965	110	spider	lanalana				
+39322	111	fish	i'a			1	1
+39679	112	rotten	pilau			15	
+40036	113	branch	lālā			1,33	1
+40393	114	leaf	lau			1	1
+40750	115	root	a'a			2	1
+41107	116	flower	pua			1	
+41464	117	fruit	hua			1	1
+41821	118	grass	mau'u			58	
+42178	119	earth/soil	honua	'island'?			
+134103	119	earth/soil	lepo	Dirt, earth, ground; dirty, soiled (Pki).		11	
+42535	120	stone	pōhaku			1,19	1
+42892	121	sand	one			1	1
+43249	122	water	wai			2	1
+43606	123	to flow	kahe			10	
+107760	124	sea	kai			1	1
+107761	124	sea	moana			10	
+44320	125	salt	pa'akai			20,19	
+44677	126	lake	loko			6	
+45034	127	woods/forest	ulu lā'au			15,13	
+45391	128	sky	lani			1	1
+45748	129	moon	mahina			37, 5	
+46105	130	star	hōkū			1	
+46462	131	cloud	ao			12	
+46819	132	fog	'ohu	<A		1, 47	1
+47176	133	rain	ua			1	1
+47533	134	thunder	hekili			14	
+47890	135	lightning	uila			2	1
+48247	136	wind	makani			1,66	1
+108097	137	to blow	puhi			6	
+108098	137	to blow	pā			7	
+109057	138	warm	hahana			1	1
+109058	138	warm	wela			8	
+49318	139	cold	anu			8	
+49675	140	dry	malo'o			13	
+50032	141	wet	pulu			37	
+50389	142	heavy	kaumaha			46	
+50746	143	fire	ahi			1	1
+79448	144	to burn	'ā	(<i)		62	1
+79449	144	to burn	kuni	(<i)		7	1
+51460	145	smoke	uahi			2	
+51817	146	ash	lehu			1, 67	?
+52174	147	black	'ele'ele			5	
+121155	148	white	kea			8	
+121156	148	white	ke'oke'o			9	
+52888	149	red	'ula			13	
+53245	150	yellow	lena			10	
+53602	151	green	ma'oma'o				
+79858	152	small	iki			66	1
+79859	152	small	li'i			66	1
+54316	153	big	nui			11	
+54673	154	short	pōkole			9	
+55030	155	long	loa			12	
+55387	156	thin	lahi			5	
+55744	157	thick	mākolukolu			3	
+56101	158	narrow	lā'iki			84	
+56458	159	wide	ākea			21	
+56815	160	painful, sick	ma'i			1	
+57172	161	shy, ashamed	hilahila			3	1
+57529	162	old	kahiko			10	
+57886	163	new	hou			1	
+58243	164	good	maika'i			15	1
+58600	165	bad, evil	'ino			9	
+58957	166	correct, true	'oiā'i'o				
+59314	167	night	pō			1	
+59671	168	day	lā			7	1
+60028	169	year	makahiki			7	
+80928	170	when?	āhea			5	
+80929	170	when?	ināhea			5	
+60742	171	to hide	hūnā			1,16	
+61099	172	to climb	pi'i			6	
+81095	173	at	ma				
+81096	173	at	i			1	
+121157	174	in, inside	lo|ko			5	1
+121158	174	in, inside	i			x	
+62170	175	above	i luna			9	?
+62527	176	below	lalo			8	
+132639	177	this	kēia				
+132640	177	this	nei			1	
+125629	178	that	kēlā	(<M)			?
+125631	178	that	kēnā			1	
+125630	178	that	la				
+125632	178	that	na			1	
+63598	179	near	kokoke	kela, la (far), kela, na (near hearer)			1
+63955	180	far	mamao			13	
+64312	181	where?	aia i hea			3,35	
+64669	182	I	['o] au			1,21	
+65026	183	thou	'oe			1	1
+65383	184	he/she	['o]ia			1	?
+132633	185	we	kāua	1 dual incl.		1, 29	1
+132634	185	we	kākou	1 pl. incl.		1, 39	1
+132635	185	we	māua			2, 29	1
+132636	185	we	mākou			2, 39	1
+82035	186	you	'olua			x	1
+82036	186	you	'oukou			16	1
+82131	187	they	lāua	dual		x	1?
+82132	187	they	lākou			1, 72	1?
+66811	188	what?	aha			1	1
+67168	189	who?	wai			1,19	1
+67525	190	other	kekāhi			7	?
+67882	191	all	apau			59?	
+82487	192	and	a			2	
+82488	192	and	a me			2	
+68596	193	if	inā	(<e)		6?	1?
+68953	194	how?	pehea			11	
+69310	195	no, not	'ole			11	
+69667	196	to count	helu				
+70024	197	One	kahi			14,48	
+173586	197	One	'ekahi			14,48	
+70381	198	Two	lua			1	
+70738	199	Three	kolu			1	1
+71095	200	Four	hā			1,66	1
+83759	201	Five	lima	Five, hand.(Source: Pollex)		1	
+123836	202	Six	'eono			1	
+83661	203	Seven	hiku	Seven.(Source: Pollex)		1	
+90441	204	Eight	walu	Pollex 06: Walu. :Eight.		3	
+83536	205	Nine	iwa	Nine.(Source: Pollex)		5,66	
+83428	206	Ten	anahulu	Ten days.(Source: Pollex)		5	
+153109	206	Ten	'umi	this may be a term meaning 'fathom' or similqr ,easure for water depth.  A cognate is found in Old Rapa kumi, but this should not be included for the number 10-MW		x	
+131867	207	Twenty	iwakālua			5	
+251534	208	Fifty	kanalima				
+251533	209	One Hundred	hanele	English loan	L	11	
+251532	210	One Thousand	kaukani		L	11	
