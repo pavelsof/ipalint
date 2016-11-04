@@ -69,8 +69,8 @@ class Core:
 		ipa_symbols = Counter()
 		unk_symbols = Counter()
 		
-		for ipa_string in reader.gen_ipa_data():
-			sym, unk = tokeniser.tokenise(ipa_string)
+		for ipa_string, line_num in reader.gen_ipa_data():
+			sym, unk = tokeniser.tokenise(ipa_string, line_num)
 			for item in sym:
 				ipa_symbols[item] += 1
 			for item in unk:

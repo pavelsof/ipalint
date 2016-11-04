@@ -108,7 +108,8 @@ class Reader:
 	
 	def gen_ipa_data(self):
 		"""
-		Generator for iterating over the IPA strings found in the file.
+		Generator for iterating over the IPA strings found in the file. Yields
+		the IPA data string paired with the respective line number.
 		"""
 		f = self._open(self.file_path)
 		
@@ -122,7 +123,7 @@ class Reader:
 					mes = 'Could not find IPA data on line: {}'.format(line)
 					raise ValueError(mes)
 				
-				yield datum
+				yield datum, reader.line_num
 		
 		finally:
 			f.close()

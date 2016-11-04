@@ -65,7 +65,7 @@ class ReaderTestCase(TestCase):
 		res = []
 		
 		reader = Reader(file_path, has_header=False, ipa_col=d['col'])
-		for datum in reader.gen_ipa_data():
+		for datum, line_num in reader.gen_ipa_data():
 			res.append(datum)
 		
 		self.assertEqual(res, data)
@@ -73,12 +73,12 @@ class ReaderTestCase(TestCase):
 	
 	def test_gen_ipa_data_hawaiian(self):
 		reader = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
-		data = [datum for datum in reader.gen_ipa_data()]
+		data = [res for res in reader.gen_ipa_data()]
 		self.assertEqual(len(data), 246)
 		
-		self.assertEqual(data[0], 'lima')
-		self.assertEqual(data[209], '[\'o] au')
-		self.assertEqual(data[245], 'kaukani')
+		self.assertEqual(data[0], ('lima', 2))
+		self.assertEqual(data[209], ('[\'o] au', 211))
+		self.assertEqual(data[245], ('kaukani', 247))
 		
 		# reader2 = Reader(HAWAIIAN_CSV_PATH, ipa_col=3)
 		# data2 = [datum for datum in reader2.gen_ipa_data()]
@@ -95,6 +95,6 @@ class ReaderTestCase(TestCase):
 		reader = Reader(file_path, has_header=False, ipa_col=3)
 		
 		with self.assertRaises(ValueError):
-			[datum for datum in reader.gen_ipa_data()]
+			[res for res in reader.gen_ipa_data()]
 
 
