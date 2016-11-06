@@ -44,13 +44,12 @@ class Tokeniser:
 	named tuples.
 	"""
 	
-	def __init__(self, reporter):
+	def __init__(self):
 		"""
 		Constructor. Expects a Reporter instance to add the lint issues to.
 		Raises IPADataError if the IPA data cannot be loaded.
 		"""
 		self.log = logging.getLogger(__name__)
-		self.rep = reporter
 		
 		self.ipa = self._load_ipa_data(IPA_DATA_PATH)
 	
@@ -81,15 +80,6 @@ class Tokeniser:
 		return ipa
 	
 	
-	def normalise(self, string):
-		"""
-		Applies Unicode normalisation on the given string (and returns the
-		normalised string). If the normalised string is different from the
-		original, the corresponding lint error is added to the report.
-		"""
-		return unicodedata.normalize('NFD', string)
-	
-	
 	def tokenise(self, string):
 		"""
 		Splits the given string into (1) a tuple of Symbol named tuples; (2) a
@@ -110,6 +100,5 @@ class Tokeniser:
 				unknown.append(UnknownSymbol(char, name))
 		
 		return tuple(symbols), tuple(unknown)
-
 
 

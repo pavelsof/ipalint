@@ -11,7 +11,7 @@ from ipalint.ipa import IPADataError, Tokeniser
 class TokeniserTestCase(TestCase):
 	
 	def setUp(self):
-		self.tok = Tokeniser(None)
+		self.tok = Tokeniser()
 	
 	
 	def test_load_ipa_data(self):

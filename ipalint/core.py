@@ -64,7 +64,7 @@ class Core:
 		rep = Reporter()
 		
 		reader = Reader(dataset_path)
-		tokeniser = Tokeniser(rep)
+		tokeniser = Tokeniser()
 		
 		ipa_symbols = Counter()
 		unk_symbols = Counter()

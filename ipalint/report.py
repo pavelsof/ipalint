@@ -5,8 +5,8 @@ import logging
 
 
 """
-Represents an IPA error found by any of the linters. The line attribute refers
-to the line in the dataset.
+Represents an IPA error found by any of the linters. The lines are the
+offending lines in the dataset and the string is the error message.
 """
 Error = namedtuple('Error', ['lines', 'string'])
 
@@ -26,10 +26,10 @@ class Reporter:
 		self.errors = []
 	
 	
-	def add(self, error):
+	def add(self, lines, message):
 		"""
 		"""
-		self.errors.append(error)
+		self.errors.append(Error(lines, message))
 	
 	
 	def __str__(self):
