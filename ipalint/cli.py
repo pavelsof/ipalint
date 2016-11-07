@@ -1,6 +1,7 @@
 import argparse
 
 from ipalint.core import Core
+from ipalint import __version__
 
 
 
@@ -14,24 +15,45 @@ class Cli:
 		"""
 		Constructor. Inits the argparse parser.
 		"""
-		self.parser = argparse.ArgumentParser()
+		usage = 'ipalint dataset [options]'
+		desc = ('simple linter that checks datasets for '
+				'IPA errors and inconsistencies')
 		
-		self.parser.add_argument('datafile', help=(
-			'the data file to be linted; '
+		self.parser = argparse.ArgumentParser(usage=usage,
+				description=desc, add_help=False)
+		
+		input_args = self.parser.add_argument_group('dataset arguments')
+		input_args.add_argument('dataset', help=(
+			'the dataset file to be linted; '
 			'possible formats are csv/tsv'))
-		
-		self.parser.add_argument('-f', '--fix', action='store_true', help=(
-			'create a copy of the original file '
-			'but with the IPA data fixed'))
-		self.parser.add_argument('-c', '--col', type=int, help=(
-			'specify the column with the IPA data; '
+		input_args.add_argument('--col', help=(
+			'specify the column with IPA data; '
+			'this could be an index (e.g. 3 for the 4th column) '
+			'or a column name (if there is a header row); '
 			'generally ipalint should be clever enough '
 			'to infer which the column is'))
-		self.parser.add_argument('-nh', '--no-header', action='store_true', help=(
+		input_args.add_argument('--no-header', action='store_true', help=(
 			'do not skip the first row of the file; '
-			'the default is true (it will be skipped)'))
-		self.parser.add_argument('-v', '--verbose', action='store_true',
-			help='print debug info')
+			'if this flag is not set, the first row will be skipped'))
+		
+		output_args = self.parser.add_argument_group('output arguments')
+		output_args.add_argument('--ignore-nfd', action='store_true', help=(
+			'ignore warnings about strings that are not compliant with '
+			'Unicode\'s NFD normal form'))
+		output_args.add_argument('--ignore-ws', action='store_true', help=(
+			'ignore warnings about whitespace issues '
+			'(e.g. leading or trailing whitespace)'))
+		output_args.add_argument('--linewise', action='store_true', help=(
+			'show errors line-by-line; '
+			'by default each error is only shown once with '
+			'the offending lines\' numbers stacked together'))
+		
+		meta_args = self.parser.add_argument_group('meta arguments')
+		meta_args.add_argument('-h', '--help', action='help', help=(
+			'show this help message and exit'))
+		meta_args.add_argument('-v', '--version', action='version',
+			version=__version__,
+			help='show the version number and exit')
 	
 	
 	def run(self, raw_args=None):
@@ -39,27 +61,29 @@ class Cli:
 		Parses the given arguments (or, except for in unit testing, sys.argv),
 		inits the Core instance and transfers to that. Note that if raw_args is
 		None, then argparse's parser defaults to reading sys.argv.
-		
-		Returns a human-readable string to be printed to the user.
 		"""
 		args = self.parser.parse_args(raw_args)
 		
-		core = Core(args.verbose)
+		core = Core()
 		
-		report = core.lint(args.datafile,
-					has_header = not args.no_header,
-					ipa_col = args.col)
+		try:
+			report = core.lint(args.dataset,
+						has_header = not args.no_header,
+						ipa_col = int(args.col))
+		except Exception as err:
+			self.parser.error(str(err))
 		
-		return report
+		print(report)
+		self.parser.exit()
 
 
 
 def main():
 	"""
 	The (only) entry point for the command-line interface as registered in
-	setup.py. Inits a Cli instance, runs it with sys.argv, and prints the
-	output to stdout.
+	setup.py. Inits a Cli instance and runs it with sys.argv.
 	"""
 	cli = Cli()
-	res = cli.run()
-	if res: print(res)
+	cli.run()
+
+
