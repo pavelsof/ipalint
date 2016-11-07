@@ -1,11 +1,10 @@
-from collections import Counter
-
 import logging.config
 import logging
 
-from ipalint.ipa import Tokeniser
+from ipalint.ipa import Recogniser
 from ipalint.read import Reader
 from ipalint.report import Reporter
+from ipalint.strnorm import Normaliser
 
 
 
@@ -56,25 +55,23 @@ class Core:
 		self.log = logging.getLogger(__name__)
 	
 	
-	def lint(self, dataset_path):
+	def lint(self, dataset_path, has_header=True, ipa_col=None):
 		"""
 		Returns a Reporter instance that should contain all the issues found in
 		the dataset specified by the given file path.
 		"""
-		rep = Reporter()
+		reader = Reader(dataset_path, has_header, ipa_col)
 		
-		reader = Reader(dataset_path)
-		tokeniser = Tokeniser()
-		
-		ipa_symbols = Counter()
-		unk_symbols = Counter()
+		norm = Normaliser()
+		recog = Recogniser()
 		
 		for ipa_string, line_num in reader.gen_ipa_data():
-			sym, unk = tokeniser.tokenise(ipa_string, line_num)
-			for item in sym:
-				ipa_symbols[item] += 1
-			for item in unk:
-				unk_symbols[item] += 1
+			ipa_string = norm.normalise(ipa_string, line_num)
+			recog.recognise(ipa_string, line_num)
+		
+		rep = Reporter()
+		norm.report(rep)
+		recog.report(rep)
 		
 		return rep
 

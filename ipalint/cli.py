@@ -23,7 +23,7 @@ class Cli:
 		self.parser.add_argument('-f', '--fix', action='store_true', help=(
 			'create a copy of the original file '
 			'but with the IPA data fixed'))
-		self.parser.add_argument('-c', '--col', help=(
+		self.parser.add_argument('-c', '--col', type=int, help=(
 			'specify the column with the IPA data; '
 			'generally ipalint should be clever enough '
 			'to infer which the column is'))
@@ -45,6 +45,12 @@ class Cli:
 		args = self.parser.parse_args(raw_args)
 		
 		core = Core(args.verbose)
+		
+		report = core.lint(args.datafile,
+					has_header = not args.no_header,
+					ipa_col = args.col)
+		
+		return report
 
 
 
@@ -56,4 +62,4 @@ def main():
 	"""
 	cli = Cli()
 	res = cli.run()
-	if res: print(res.strip())
+	if res: print(res)

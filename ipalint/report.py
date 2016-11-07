@@ -28,6 +28,8 @@ class Reporter:
 	
 	def add(self, lines, message):
 		"""
+		Adds a lint issue to the report. The first arg should be [] of lines on
+		which the issue is present. The second arg should be the error message.
 		"""
 		self.errors.append(Error(lines, message))
 	
@@ -37,7 +39,7 @@ class Reporter:
 		Returns the string describing all the errors collected so far.
 		"""
 		return '\n'.join([
-			'({}) {}'.format(index, error)
+			'({}) {} {}'.format(index+1, error.string, ','.join(map(str, error.lines)))
 			for index, error in enumerate(self.errors)])
 
 
