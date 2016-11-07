@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
 import csv
 import logging
@@ -38,20 +38,22 @@ class IPADataError(ValueError):
 
 
 
-class Tokeniser:
+class Recogniser:
 	"""
-	Knows how to the tokenise transcription strings into sequences of Symbol
-	named tuples.
+	Knows how to recognise IPA symbols from non-IPA ones and keeps track of all
+	the encountered symbols.
 	"""
 	
 	def __init__(self):
 		"""
-		Constructor. Expects a Reporter instance to add the lint issues to.
-		Raises IPADataError if the IPA data cannot be loaded.
+		Constructor. Raises IPADataError if the IPA data cannot be loaded.
 		"""
 		self.log = logging.getLogger(__name__)
 		
 		self.ipa = self._load_ipa_data(IPA_DATA_PATH)
+		
+		self.ipa_symbols = defaultdict(list)  # Symbol: [] of line_num
+		self.unk_symbols = defaultdict(list)  # UnknownSymbol: [] of line_num
 	
 	
 	def _load_ipa_data(self, ipa_data_path):
@@ -80,10 +82,11 @@ class Tokeniser:
 		return ipa
 	
 	
-	def tokenise(self, string):
+	def recognise(self, string, line_num):
 		"""
-		Splits the given string into (1) a tuple of Symbol named tuples; (2) a
-		tuple of unknown symbols.
+		Splits the string into chars and distributes these into the buckets of
+		IPA and non-IPA symbols. Expects that there are no precomposed chars in
+		the string.
 		"""
 		symbols = []
 		unknown = []
@@ -95,10 +98,24 @@ class Tokeniser:
 				name = 'UNNAMED CHARACTER {}'.format(ord(char))
 			
 			if char in self.ipa:
-				symbols.append(Symbol(char, name, self.ipa[char]))
+				symbol = Symbol(char, name, self.ipa[char])
+				symbols.append(symbol)
+				self.ipa_symbols[symbol].append(line_num)
 			else:
-				unknown.append(UnknownSymbol(char, name))
+				symbol = UnknownSymbol(char, name)
+				unknown.append(symbol)
+				self.unk_symbols[symbol].append(line_num)
 		
 		return tuple(symbols), tuple(unknown)
+	
+	
+	def report(self, reporter):
+		"""
+		Adds the problems that have been found so far to the given Reporter
+		instance.
+		"""
+		for symbol in sorted(self.unk_symbols.keys()):
+			err = '{} ({}) is not part of IPA'.format(symbol.char, symbol.name)
+			reporter.add(self.unk_symbols[symbol], err)
 
 
