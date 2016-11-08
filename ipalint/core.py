@@ -71,9 +71,9 @@ class Core:
 			recog.recognise(ipa_string, line_num)
 		
 		rep = Reporter()
-		norm.report(rep)
+		norm.report(rep, ignore_nfd, ignore_ws)
 		recog.report(rep)
 		
-		return rep.get_report(linewise=linewise)
+		return rep.get_report(linewise)
 
 

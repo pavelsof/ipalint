@@ -29,7 +29,7 @@ class CliTestCase(TestCase):
 		args.extend([flag for flag in flags.values() if flag])
 		
 		with patch.object(Core, 'lint', return_value='42') as mock_lint:
-			with patch.object(sys.stdout, 'write') as mock_write:
+			with patch.object(sys.stdout, 'write'):
 				try:
 					self.cli.run(args)
 				except SystemExit:
