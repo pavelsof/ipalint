@@ -34,7 +34,7 @@ class Reader:
 		self.file_path = file_path
 		
 		self.has_header = has_header
-		self.ipa_col = ipa_col
+		self.ipa_col = int(ipa_col) if ipa_col else None
 	
 	
 	def _open(self, file_path):

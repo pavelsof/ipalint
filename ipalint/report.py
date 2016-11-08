@@ -1,14 +1,13 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple, OrderedDict
 
 import logging
 
 
 
 """
-Represents an IPA error found by any of the linters. The lines are the
-offending lines in the dataset and the string is the error message.
+Represents an IPA error found by any of the linters.
 """
-Error = namedtuple('Error', ['lines', 'string'])
+Error = namedtuple('Error', ['string'])
 
 
 
@@ -23,7 +22,7 @@ class Reporter:
 		Constructor.
 		"""
 		self.log = logging.getLogger(__name__)
-		self.errors = []
+		self.errors = OrderedDict()  # error: [] of line numbers
 	
 	
 	def add(self, lines, message):
@@ -31,15 +30,37 @@ class Reporter:
 		Adds a lint issue to the report. The first arg should be [] of lines on
 		which the issue is present. The second arg should be the error message.
 		"""
-		self.errors.append(Error(lines, message))
+		error = Error(message)
+		
+		if error not in self.errors:
+			self.errors[error] = []
+		
+		self.errors[error].extend(lines)
 	
 	
-	def __str__(self):
+	def _get_linewise_report(self):
+		d = defaultdict(list)  # line: [] of errors
+		
+		for error, lines in self.errors.items():
+			for line_num in lines:
+				d[line_num].append(error)
+		
+		return '\n'.join([
+			'{} → {}'.format(line, error.string)
+			for line, errors in d.items()
+			for error in errors])
+	
+	
+	def get_report(self, linewise=False, ignores=[]):
 		"""
 		Returns the string describing all the errors collected so far.
 		"""
-		return '\n'.join([
-			'({}) {} {}'.format(index+1, error.string, ','.join(map(str, error.lines)))
-			for index, error in enumerate(self.errors)])
+		if linewise:
+			return self._get_linewise_report()
+		
+		else:
+			return '\n'.join([
+				'{} → {}'.format(error.string, ','.join(map(str, lines)))
+				for error, lines in self.errors.items()])
 
 

@@ -55,12 +55,13 @@ class Core:
 		self.log = logging.getLogger(__name__)
 	
 	
-	def lint(self, dataset_path, has_header=True, ipa_col=None):
+	def lint(self, dataset=None, col=None, no_header=False,
+				ignore_nfd=False, ignore_ws=False, linewise=False):
 		"""
-		Returns a Reporter instance that should contain all the issues found in
-		the dataset specified by the given file path.
+		Returns a string containing all the issues found in the dataset
+		defined by the given file path.
 		"""
-		reader = Reader(dataset_path, has_header, ipa_col)
+		reader = Reader(dataset, has_header=not no_header, ipa_col=col)
 		
 		norm = Normaliser()
 		recog = Recogniser()
@@ -73,6 +74,6 @@ class Core:
 		norm.report(rep)
 		recog.report(rep)
 		
-		return rep
+		return rep.get_report(linewise=linewise)
 
 

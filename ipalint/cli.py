@@ -58,18 +58,16 @@ class Cli:
 	
 	def run(self, raw_args=None):
 		"""
-		Parses the given arguments (or, except for in unit testing, sys.argv),
-		inits the Core instance and transfers to that. Note that if raw_args is
-		None, then argparse's parser defaults to reading sys.argv.
+		Parses the given arguments (if these are None, then argparse's parser
+		defaults to parsing sys.argv), inits a Core instance, calls its lint
+		method with the respective arguments, and then exits.
 		"""
 		args = self.parser.parse_args(raw_args)
 		
 		core = Core()
 		
 		try:
-			report = core.lint(args.dataset,
-						has_header = not args.no_header,
-						ipa_col = int(args.col))
+			report = core.lint(**vars(args))
 		except Exception as err:
 			self.parser.error(str(err))
 		
