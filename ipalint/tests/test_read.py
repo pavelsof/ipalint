@@ -50,6 +50,21 @@ class ReaderTestCase(TestCase):
 		self.temp_dir.cleanup()
 	
 	
+	def test_sniff(self):
+		reader = Reader(HAWAIIAN_CSV_PATH)
+		dialect = reader.sniff()
+		self.assertEqual(dialect.delimiter, ',')
+		self.assertEqual(dialect.doublequote, True)
+		self.assertEqual(dialect.quotechar, '"')
+		self.assertEqual(dialect.skipinitialspace, False)
+		
+		reader = Reader(HAWAIIAN_TSV_PATH)
+		dialect = reader.sniff()
+		self.assertEqual(dialect.delimiter, '\t')
+		self.assertEqual(dialect.doublequote, True)
+		self.assertEqual(dialect.skipinitialspace, False)
+	
+	
 	@given(list_and_index(text(min_size=1)))
 	def test_infer_ipa_col_index(self, lind):
 		li, index = lind
@@ -97,14 +112,14 @@ class ReaderTestCase(TestCase):
 			reader._infer_ipa_col(li)
 	
 	
-	@given(integers(min_value=1, max_value=42).flatmap(lambda n: fixed_dictionaries({
-			'lines': lists(lists(text(min_size=1, alphabet=string.printable),
-								min_size=n, max_size=n), min_size=1),
+	@given(integers(min_value=2, max_value=42).flatmap(lambda n: fixed_dictionaries({
+			'lines': lists(lists(text(min_size=1, alphabet=string.ascii_letters),
+								min_size=n, max_size=n), min_size=2),
 			'col': integers(min_value=0, max_value=n-1)})))
 	def test_gen_ipa_data(self, d):
 		file_path = os.path.join(self.temp_dir.name, 'test')
 		with open(file_path, 'w', newline='') as f:
-			writer = csv.writer(f, delimiter='\t')
+			writer = csv.writer(f)
 			for line in d['lines']: writer.writerow(line)
 		
 		data = [line[d['col']] for line in d['lines']]
@@ -118,17 +133,17 @@ class ReaderTestCase(TestCase):
 	
 	
 	def test_gen_ipa_data_hawaiian(self):
-		reader = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
-		data = [res for res in reader.gen_ipa_data()]
+		reader = Reader(HAWAIIAN_CSV_PATH, ipa_col=3)
+		data = [datum for datum in reader.gen_ipa_data()]
 		self.assertEqual(len(data), 246)
 		
 		self.assertEqual(data[0], ('lima', 2))
 		self.assertEqual(data[209], ('[\'o] au', 211))
 		self.assertEqual(data[245], ('kaukani', 247))
 		
-		# reader2 = Reader(HAWAIIAN_CSV_PATH, ipa_col=3)
-		# data2 = [datum for datum in reader2.gen_ipa_data()]
-		# self.assertEqual(data, data2)
+		reader2 = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
+		data2 = [res for res in reader2.gen_ipa_data()]
+		self.assertEqual(data, data2)
 	
 	
 	def test_gen_ipa_data_error(self):

@@ -24,7 +24,7 @@ class ReporterTestCase(TestCase):
 			self.rep.add(lines, error)
 		
 		rep = self.rep.get_report()
-		self.assertEqual(len(rep.split('\n')), len(d))
+		self.assertEqual(len(rep.splitlines()), len(d))
 		
 		self.rep.clear()
 	
@@ -37,7 +37,7 @@ class ReporterTestCase(TestCase):
 			self.rep.add([line], error)
 		
 		rep = self.rep.get_report(linewise=True)
-		self.assertEqual(len(rep.split('\n')), len(li))
+		self.assertEqual(len(rep.splitlines()), len(li))
 		
 		self.rep.clear()
 

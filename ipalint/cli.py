@@ -25,7 +25,7 @@ class Cli:
 		input_args = self.parser.add_argument_group('dataset arguments')
 		input_args.add_argument('dataset', help=(
 			'the dataset file to be linted; '
-			'possible formats are csv/tsv'))
+			'possible formats are csv and tsv/tab'))
 		input_args.add_argument('--col', help=(
 			'specify the column with IPA data; '
 			'this could be an index (e.g. 3 for the 4th column) '

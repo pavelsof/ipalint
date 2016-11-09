@@ -37,23 +37,57 @@ class Reader:
 		
 		self.has_header = has_header
 		self.ipa_col = ipa_col
+		
+		self.dialect = None
 	
 	
-	def _open(self, file_path):
+	def _open(self, file_path=None):
 		"""
 		Opens the file specified by the given path. Raises ValueError if there
 		is a problem with opening or reading the file.
 		"""
+		if not file_path:
+			file_path = self.file_path
+		
 		if not os.path.exists(file_path):
 			raise ValueError('Could not find file: {}'.format(file_path))
 		
 		try:
-			f = open(file_path, newline='')
+			f = open(file_path, encoding='utf-8', newline='')
 		except OSError as err:
 			self.log.error(str(err))
 			raise ValueError('Could not open file: {}'.format(file_path))
 		
 		return f
+	
+	
+	def sniff(self):
+		"""
+		Opens the dataset and tries to infer whether the format is csv, tsv, or
+		simply a single column of IPA data. Raises ValueError if unsuccessful.
+		
+		In most scenarios, this will be the first time when the file is opened,
+		which can also raises a ValueError.
+		"""
+		ext = os.path.basename(self.file_path).rsplit('.', maxsplit=1)
+		ext = ext[1].lower() if len(ext) > 1 else None
+		
+		delimiters = '\t' if ext in ['tsv', 'tab'] else ',\t;:'
+		
+		f = self._open()
+		
+		try:
+			self.dialect = csv.Sniffer().sniff(f.read(), delimiters=delimiters)
+		except csv.Error as err:
+			self.log.error(str(err))
+			raise ValueError('Could not determine csv dialect')
+		finally:
+			f.close()
+		
+		if ext in ['tsv', 'tab']:
+			self.dialect.quotechar = '"'
+		
+		return self.dialect
 	
 	
 	def _get_reader(self, f):
@@ -64,17 +98,10 @@ class Reader:
 		Also, if self.ipa_col is not set, an attempt will be made to infer
 		which the IPA column is. ValueError would be raised otherwise.
 		"""
-		'''sniffer = csv.Sniffer()
+		if not self.dialect:
+			self.sniff()
 		
-		try:
-			dialect = sniffer.sniff(f.read(1024*10), delimiters=',\t')
-		except csv.Error as err:
-			self.log.error(str(err))
-			raise ValueError('Could not determine csv dialect')
-		else:
-			f.seek(0)'''
-		
-		reader = csv.reader(f, delimiter='\t')
+		reader = csv.reader(f, dialect=self.dialect)
 		
 		if self.has_header:
 			header = next(reader)
@@ -135,7 +162,7 @@ class Reader:
 		Generator for iterating over the IPA strings found in the file. Yields
 		the IPA data string paired with the respective line number.
 		"""
-		f = self._open(self.file_path)
+		f = self._open()
 		
 		try:
 			reader = self._get_reader(f)
