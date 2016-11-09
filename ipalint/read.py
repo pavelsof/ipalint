@@ -27,14 +27,16 @@ class Reader:
 		Constructor. Expects the path to the file to be read. Optional args:
 		
 		has_header: whether the first line of the file will be ignored or not;
-		ipa_col: the column from which to extract the IPA data.
+		ipa_col: the column from which to extract the IPA data; this could be
+		either the column's index or name, or None (in which case the Reader
+		will try to guess the column).
 		"""
 		self.log = logging.getLogger(__name__)
 		
 		self.file_path = file_path
 		
 		self.has_header = has_header
-		self.ipa_col = int(ipa_col) if ipa_col else None
+		self.ipa_col = ipa_col
 	
 	
 	def _open(self, file_path):
@@ -76,20 +78,42 @@ class Reader:
 		
 		if self.has_header:
 			header = next(reader)
-			if self.ipa_col is None:
+			if not isinstance(self.ipa_col, int):
 				self.ipa_col = self._infer_ipa_col(header)
+		
 		else:
-			if self.ipa_col is None:
-				raise ValueError('Cannot infer IPA column without header')
+			if not isinstance(self.ipa_col, int):
+				if not self.ipa_col:
+					raise ValueError('Cannot infer IPA column without header')
+				
+				try:
+					self.ipa_col = int(self.ipa_col)
+				except ValueError:
+					raise ValueError('Cannot find column: {}'.format(self.ipa_col))
 		
 		return reader
 	
 	
 	def _infer_ipa_col(self, header):
 		"""
-		Returns the column containing the IPA data based on the header (the
-		first line of the data file). Raises ValueError on failing to infer it.
+		Returns the column (as index) containing the IPA data based on the
+		header (the first line of the data file). Raises ValueError otherwise.
+		
+		If self.ipa_col is a string, it is assumed to be the column's name or
+		index. Otherwise, several common IPA column names are tried.
 		"""
+		if self.ipa_col and isinstance(self.ipa_col, str):
+			if self.ipa_col in header:
+				return header.index(self.ipa_col)
+			
+			try:
+				ipa_col = int(self.ipa_col)
+			except ValueError: pass
+			else:
+				return ipa_col
+			
+			raise ValueError('Could not find column: {}'.format(self.ipa_col))
+		
 		pot = []
 		
 		for index, col_name in enumerate(header):

@@ -5,8 +5,8 @@ import string
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from hypothesis.strategies import fixed_dictionaries, integers
-from hypothesis.strategies import lists, sampled_from, text
+from hypothesis.strategies import composite, fixed_dictionaries, integers
+from hypothesis.strategies import lists, sampled_from, sets, text
 from hypothesis import assume, given
 
 from ipalint.read import IPA_COL_NAMES, Reader
@@ -20,6 +20,26 @@ HAWAIIAN_CSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.csv')
 
 
 
+@composite
+def list_and_index(draw, elements):
+	li = list(draw(sets(elements, min_size=1)))
+	index = draw(integers(min_value=0, max_value=len(li)-1))
+	return li, index
+
+
+
+@composite
+def not_int_text(draw):
+	t = draw(text())
+	try:
+		int(t)
+	except ValueError:
+		return t
+	else:
+		assume(False)
+
+
+
 class ReaderTestCase(TestCase):
 	
 	def setUp(self):
@@ -30,8 +50,34 @@ class ReaderTestCase(TestCase):
 		self.temp_dir.cleanup()
 	
 	
+	@given(list_and_index(text(min_size=1)))
+	def test_infer_ipa_col_index(self, lind):
+		li, index = lind
+		assume(all([not t.isnumeric() for t in li]))
+		
+		reader = Reader(None, ipa_col=str(index))
+		self.assertEqual(reader._infer_ipa_col(li), index)
+	
+	
+	@given(list_and_index(text(min_size=1)))
+	def test_infer_ipa_col_name(self, lind):
+		li, index = lind
+		reader = Reader(None, ipa_col=li[index])
+		self.assertEqual(reader._infer_ipa_col(li), index)
+	
+	
+	@given(lists(text(min_size=1)), not_int_text())
+	def test_infer_ipa_col_name_error(self, li, t):
+		assume(t not in li)
+		
+		reader = Reader(None, ipa_col=t)
+		
+		with self.assertRaises(ValueError):
+			reader._infer_ipa_col(li)
+	
+	
 	@given(sampled_from(IPA_COL_NAMES), lists(text()))
-	def test_infer_ipa_col(self, col_name, li):
+	def test_infer_ipa_col_guess(self, col_name, li):
 		assume(all([i not in IPA_COL_NAMES for i in li]))
 		reader = Reader(None)
 		
@@ -45,7 +91,7 @@ class ReaderTestCase(TestCase):
 	
 	
 	@given(lists(sampled_from(IPA_COL_NAMES), min_size=2))
-	def test_infer_ipa_col_error(self, li):
+	def test_infer_ipa_col_guess_error(self, li):
 		reader = Reader(None)
 		with self.assertRaises(ValueError):
 			reader._infer_ipa_col(li)
