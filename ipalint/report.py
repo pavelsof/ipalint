@@ -74,7 +74,7 @@ class Reporter:
 		Helper for the get_report method.
 		"""
 		return '\n'.join([
-			'{} → {}'.format(error.string,
+			'{} ← {}'.format(error.string,
 						','.join(map(str, sorted(set(lines)))))
 			for error, lines in self.errors.items()])
 	

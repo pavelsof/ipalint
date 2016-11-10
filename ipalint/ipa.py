@@ -29,6 +29,14 @@ COMMON_ERR_DATA_PATH = os.path.join(DATA_DIR, 'common_errors.tsv')
 
 
 """
+The only non-IPA character allowed in an IPA string. Any other whitespace
+character will be reported as unknown symbols.
+"""
+SPACE = ' '
+
+
+
+"""
 Represents a recognised IPA symbol. Its attributes are the character and its
 Unicode and IPA names.
 """
@@ -135,6 +143,9 @@ class Recogniser:
 		unknown = []
 		
 		for char in string:
+			if char == SPACE:
+				continue
+			
 			try:
 				name = unicodedata.name(char)
 			except ValueError:

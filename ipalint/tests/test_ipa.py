@@ -54,13 +54,16 @@ class RecogniserTestCase(TestCase):
 	def test_recognise(self):
 		sym, unk = self.recog.recognise('aɪ pʰiː eɪ', 0)
 		self.assertEqual(len(sym), 8)
+		self.assertEqual(len(unk), 0)
 		
 		self.assertEqual(sym[0], Symbol('a', 'LATIN SMALL LETTER A', 'open front unrounded vowel'))
 		self.assertEqual(sym[1], Symbol('ɪ', 'LATIN LETTER SMALL CAPITAL I', 'lowered-close front unrounded vowel'))
+		
 		self.assertEqual(sym[2], Symbol('p', 'LATIN SMALL LETTER P', 'vl bilabial plosive'))
 		self.assertEqual(sym[3], Symbol('ʰ', 'MODIFIER LETTER SMALL H', 'aspirated'))
 		self.assertEqual(sym[4], Symbol('i', 'LATIN SMALL LETTER I', 'close front unrounded vowel'))
 		self.assertEqual(sym[5], Symbol('ː', 'MODIFIER LETTER TRIANGULAR COLON', 'long'))
+		
 		self.assertEqual(sym[6], Symbol('e', 'LATIN SMALL LETTER E', 'close-mid front unrounded vowel'))
 		self.assertEqual(sym[7], Symbol('ɪ', 'LATIN LETTER SMALL CAPITAL I', 'lowered-close front unrounded vowel'))
 	
