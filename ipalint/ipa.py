@@ -8,9 +8,23 @@ import unicodedata
 
 
 """
-Path to the IPA data file.
+Path to the dir in which the data files used by the Recogniser are located.
 """
-IPA_DATA_PATH = os.path.join(os.path.dirname(__file__), 'data/ipa.tsv')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+
+
+"""
+Path to the IPA data file, storing a list of all valid IPA symbols and their
+IPA names.
+"""
+IPA_DATA_PATH = os.path.join(DATA_DIR, 'ipa.tsv')
+
+
+"""
+Path to the common IPA errors data file, storing a mapping of some non-IPA
+symbols and their IPA counterparts.
+"""
+COMMON_ERR_DATA_PATH = os.path.join(DATA_DIR, 'common_errors.tsv')
 
 
 
@@ -19,7 +33,6 @@ Represents a recognised IPA symbol. Its attributes are the character and its
 Unicode and IPA names.
 """
 Symbol = namedtuple('Symbol', ['char', 'name', 'ipa_name'])
-
 
 
 """
@@ -51,6 +64,7 @@ class Recogniser:
 		self.log = logging.getLogger(__name__)
 		
 		self.ipa = self._load_ipa_data(IPA_DATA_PATH)
+		self.common_err = self._load_common_err_data(COMMON_ERR_DATA_PATH)
 		
 		self.ipa_symbols = defaultdict(list)  # Symbol: [] of line_num
 		self.unk_symbols = defaultdict(list)  # UnknownSymbol: [] of line_num
@@ -71,7 +85,7 @@ class Recogniser:
 						continue
 					
 					if line[0] in ipa:
-						raise IPADataError('')
+						raise IPADataError('Bad IPA data file')
 					
 					ipa[line[0]] = line[1]
 		
@@ -80,6 +94,35 @@ class Recogniser:
 			raise IPADataError('Could not open the IPA data file')
 		
 		return ipa
+	
+	
+	def _load_common_err_data(self, common_err_data_path):
+		"""
+		Loads and returns the {bad: good} dictionary stored in the common
+		errors data file.
+		"""
+		common_err = {}
+		
+		try:
+			with open(common_err_data_path, newline='') as f:
+				reader = csv.reader(f, delimiter='\t')
+				for line in reader:
+					if len(line) != 2:
+						continue
+					
+					try:
+						assert line[0] not in common_err
+						assert line[1] in self.ipa
+					except AssertionError:
+						raise IPADataError('Bad common IPA errors file')
+					
+					common_err[line[0]] = line[1]
+		
+		except (IOError, ValueError) as err:
+			self.log.error(str(err))
+			raise IPADataError('Could not open the common IPA errors data file')
+		
+		return common_err
 	
 	
 	def recognise(self, string, line_num):
@@ -116,6 +159,12 @@ class Recogniser:
 		"""
 		for symbol in sorted(self.unk_symbols.keys()):
 			err = '{} ({}) is not part of IPA'.format(symbol.char, symbol.name)
+			
+			if symbol.char in self.common_err:
+				repl = self.common_err[symbol.char]
+				err += ', suggested replacement is {} ({})'
+				err = err.format(repl, unicodedata.name(repl))
+			
 			reporter.add(self.unk_symbols[symbol], err)
 
 
