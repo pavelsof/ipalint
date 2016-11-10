@@ -56,7 +56,7 @@ class Core:
 	
 	
 	def lint(self, dataset=None, col=None, no_header=False,
-				ignore_nfd=False, ignore_ws=False, linewise=False):
+				ignore_nfd=False, ignore_ws=False, linewise=False, no_lines=False):
 		"""
 		Returns a string containing all the issues found in the dataset
 		defined by the given file path.
@@ -74,6 +74,6 @@ class Core:
 		norm.report(rep, ignore_nfd, ignore_ws)
 		recog.report(rep)
 		
-		return rep.get_report(linewise)
+		return rep.get_report(linewise, no_lines)
 
 

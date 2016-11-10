@@ -47,6 +47,10 @@ class Cli:
 			'show errors line-by-line; '
 			'by default each error is only shown once with '
 			'the offending lines\' numbers stacked together'))
+		output_args.add_argument('--no-lines', action='store_true', help=(
+			'only show the error messages, '
+			'without the line numbers where the errors originate; '
+			'ignored if --linewise is set'))
 		
 		meta_args = self.parser.add_argument_group('meta arguments')
 		meta_args.add_argument('-h', '--help', action='help', help=(

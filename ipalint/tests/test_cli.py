@@ -22,7 +22,8 @@ class CliTestCase(TestCase):
 				'no_header': sampled_from(['--no-header', '']),
 				'ignore_nfd': sampled_from(['--ignore-nfd', '']),
 				'ignore_ws': sampled_from(['--ignore-ws', '']),
-				'linewise': sampled_from(['--linewise', ''])}))
+				'linewise': sampled_from(['--linewise', '']),
+				'no_lines': sampled_from(['--no-lines', ''])}))
 	def test_run(self, dataset, col, flags):
 		args = [dataset]
 		if col: args.extend(['--col', col])
@@ -41,6 +42,7 @@ class CliTestCase(TestCase):
 					no_header = True if flags['no_header'] else False,
 					ignore_nfd = True if flags['ignore_nfd'] else False,
 					ignore_ws = True if flags['ignore_ws'] else False,
-					linewise = True if flags['linewise'] else False)
+					linewise = True if flags['linewise'] else False,
+					no_lines = True if flags['no_lines'] else False)
 
 

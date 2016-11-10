@@ -66,27 +66,30 @@ class Reporter:
 			for error in d[line]])
 	
 	
-	def _get_report(self):
+	def _get_report(self, with_line_nums=True):
 		"""
 		Returns a report which includes each distinct error only once, together
-		with a list of the input lines where the error occurs.
+		with a list of the input lines where the error occurs. The latter will
+		be omitted if flag is set to False.
 		
 		Helper for the get_report method.
 		"""
+		templ = '{} ← {}' if with_line_nums else '{}'
+		
 		return '\n'.join([
-			'{} ← {}'.format(error.string,
-						','.join(map(str, sorted(set(lines)))))
+			templ.format(error.string, ','.join(map(str, sorted(set(lines)))))
 			for error, lines in self.errors.items()])
 	
 	
-	def get_report(self, linewise=False):
+	def get_report(self, linewise=False, no_lines=False):
 		"""
 		Returns a string describing all the errors collected so far (the
-		report). The flag determines the type of report.
+		report). The first flag determines the type of report. The second flag
+		is ignored if the first is set to True.
 		"""
 		if linewise:
 			return self._get_linewise_report()
 		else:
-			return self._get_report()
+			return self._get_report(not no_lines)
 
 
