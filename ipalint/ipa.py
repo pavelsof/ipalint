@@ -107,7 +107,9 @@ class Recogniser:
 	def _load_common_err_data(self, common_err_data_path):
 		"""
 		Loads and returns the {bad: good} dictionary stored in the common
-		errors data file.
+		errors data file. Note that the dict's keys are single characters while
+		the values do not have to be. The method also asserts that all the
+		values are valid IPA strings.
 		"""
 		common_err = {}
 		
@@ -120,7 +122,7 @@ class Recogniser:
 					
 					try:
 						assert line[0] not in common_err
-						assert line[1] in self.ipa
+						assert all([char in self.ipa for char in line[1]])
 					except AssertionError:
 						raise IPADataError('Bad common IPA errors file')
 					
@@ -173,8 +175,9 @@ class Recogniser:
 			
 			if symbol.char in self.common_err:
 				repl = self.common_err[symbol.char]
-				err += ', suggested replacement is {} ({})'
-				err = err.format(repl, unicodedata.name(repl))
+				err += ', suggested replacement is {}'.format(repl)
+				if len(repl) == 1:
+					err += ' ({})'.format(unicodedata.name(repl))
 			
 			reporter.add(self.unk_symbols[symbol], err)
 

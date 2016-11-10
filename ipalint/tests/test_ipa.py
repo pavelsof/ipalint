@@ -40,6 +40,9 @@ class RecogniserTestCase(TestCase):
 	def test_load_common_err_data(self):
 		data = self.recog._load_common_err_data(COMMON_ERR_DATA_PATH)
 		self.assertEqual(data['?'], 'ʔ')
+		self.assertEqual(data['ʦ'], 't͡s')
+		self.assertEqual(data['ʥ'], 'd͡ʑ')
+		self.assertEqual(data[':'], 'ː')
 	
 	
 	@given(text(alphabet=string.printable))
