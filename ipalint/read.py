@@ -9,6 +9,22 @@ import os.path
 
 
 """
+List of possible csv delimiters; when trying to determine the delimtier of a
+csv file, these will be tried in the order given here.
+"""
+CSV_DELIMITERS = [',', '\t', ';', ':', '|']
+
+
+
+"""
+List of possible csv quotechars that will be tried (in the order given here)
+when trying to determine the quotechar of a csv file.
+"""
+CSV_QUOTECHARS = ['"', "'"]
+
+
+
+"""
 List of lower-cased prefixes of common names for the column that contains the
 IPA data.
 """
@@ -88,6 +104,41 @@ class Reader:
 			self.dialect.quotechar = '"'
 		
 		return self.dialect
+	
+	
+	def _determine_dialect(self, lines):
+		"""
+		Expects a non-empty [] of strings; that would normally be the first few
+		lines of a csv file. Returns the most likely delimiter, quotechar tuple
+		or None if the data seems to form a single column.
+		
+		Ensures that using the returned delimiter and quotechar, all the lines
+		given will have the same number of columns.
+		"""
+		for delim in CSV_DELIMITERS:
+			counts = [line.count(delim) for line in lines]
+			
+			if min(counts) == 0:
+				continue
+			
+			for quotechar in CSV_QUOTECHARS:
+				reader = csv.reader(lines, delimiter=delim, quotechar=quotechar)
+				
+				try:
+					assert len(set([len(line) for line in reader])) == 1
+				except AssertionError:
+					continue
+				else:
+					break
+			else:
+				continue  # no suitable quoting found
+			
+			break  # found it!
+		
+		else:
+			return None
+		
+		return delim, quotechar
 	
 	
 	def _get_reader(self, f):

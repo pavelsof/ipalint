@@ -16,7 +16,9 @@ setup(
 	name = 'ipalint',
 	version = '0.0.0',
 	
-	description = 'IPA linter',
+	description = (
+		'simple linter that checks datasets '
+		'for IPA errors and inconsistencies'),
 	long_description = README,
 	
 	author = 'Pavel Sofroniev',

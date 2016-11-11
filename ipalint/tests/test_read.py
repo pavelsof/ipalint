@@ -20,6 +20,10 @@ HAWAIIAN_CSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.csv')
 
 
 
+CHARS_EXCL_NEWLINES = string.printable.rstrip('\r\n\x0b\x0c')
+
+
+
 @composite
 def list_and_index(draw, elements):
 	li = list(draw(sets(elements, min_size=1)))
@@ -157,5 +161,46 @@ class ReaderTestCase(TestCase):
 		
 		with self.assertRaises(ValueError):
 			[res for res in reader.gen_ipa_data()]
+	
+	
+	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
+				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES),
+						min_size=cols, max_size=cols), min_size=1)))
+	def test_determine_dialect_comma(self, data):
+		file_path = os.path.join(self.temp_dir.name, 'test')
+		reader = Reader(file_path)
+		
+		for dialect in [csv.excel, csv.unix_dialect]:
+			with open(file_path, 'w', newline='') as f:
+				writer = csv.writer(f, dialect=dialect)
+				for line in data:
+					writer.writerow(line)
+			
+			with open(file_path, newline='') as f:
+				lines = f.read().splitlines()
+			
+			res = reader._determine_dialect(lines)
+			self.assertEqual(res[0], ',')
+			self.assertEqual(res[1], '"')
+	
+	
+	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
+				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES.rstrip('\t')),
+						min_size=cols, max_size=cols), min_size=10)))
+	def test_determine_dialect_tab(self, data):
+		file_path = os.path.join(self.temp_dir.name, 'test')
+		reader = Reader(file_path)
+		
+		with open(file_path, 'w', newline='') as f:
+			writer = csv.writer(f, dialect=csv.excel_tab)
+			for line in data:
+				writer.writerow(line)
+		
+		with open(file_path, newline='') as f:
+			lines = f.read().splitlines()
+		
+		res = reader._determine_dialect(lines)
+		self.assertEqual(res[0], '\t')
+		self.assertEqual(res[1], '"')
 
 
