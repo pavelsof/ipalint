@@ -54,19 +54,87 @@ class ReaderTestCase(TestCase):
 		self.temp_dir.cleanup()
 	
 	
-	def test_sniff(self):
+	def test_get_dialect(self):
 		reader = Reader(HAWAIIAN_CSV_PATH)
-		dialect = reader.sniff()
+		dialect = reader.get_dialect()
 		self.assertEqual(dialect.delimiter, ',')
-		self.assertEqual(dialect.doublequote, True)
 		self.assertEqual(dialect.quotechar, '"')
-		self.assertEqual(dialect.skipinitialspace, False)
+		self.assertEqual(dialect.doublequote, False)
+		self.assertEqual(dialect.escapechar, '\\')
 		
 		reader = Reader(HAWAIIAN_TSV_PATH)
-		dialect = reader.sniff()
+		dialect = reader.get_dialect()
 		self.assertEqual(dialect.delimiter, '\t')
+		self.assertEqual(dialect.quotechar, '"')
 		self.assertEqual(dialect.doublequote, True)
-		self.assertEqual(dialect.skipinitialspace, False)
+		self.assertEqual(dialect.escapechar, None)
+	
+	
+	def test_determine_dialect(self):
+		reader = Reader(None)
+		
+		with open(HAWAIIAN_CSV_PATH, newline='') as f:
+			lines = f.read().splitlines()
+		
+		dialect = reader._determine_dialect(lines)
+		self.assertEqual(dialect.delimiter, ',')
+		self.assertEqual(dialect.quotechar, '"')
+		self.assertEqual(dialect.doublequote, False)
+		self.assertEqual(dialect.escapechar, '\\')
+		
+		with open(HAWAIIAN_TSV_PATH, newline='') as f:
+			lines = f.read().splitlines()
+		
+		dialect = reader._determine_dialect(lines)
+		self.assertEqual(dialect.delimiter, '\t')
+		self.assertEqual(dialect.quotechar, '"')
+		self.assertEqual(dialect.doublequote, True)
+		self.assertEqual(dialect.escapechar, None)
+	
+	
+	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
+				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES),
+						min_size=cols, max_size=cols), min_size=1)))
+	def test_determine_dialect_comma(self, data):
+		file_path = os.path.join(self.temp_dir.name, 'test')
+		reader = Reader(file_path)
+		
+		for dialect in [csv.excel, csv.unix_dialect]:
+			with open(file_path, 'w', newline='') as f:
+				writer = csv.writer(f, dialect=dialect)
+				for line in data:
+					writer.writerow(line)
+			
+			with open(file_path, newline='') as f:
+				lines = f.read().splitlines()
+			
+			res = reader._determine_dialect(lines)
+			self.assertEqual(res.delimiter, ',')
+			self.assertEqual(res.quotechar, '"')
+			self.assertEqual(res.doublequote, True)
+			self.assertEqual(res.escapechar, None)
+	
+	
+	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
+				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES.rstrip('\t')),
+						min_size=cols, max_size=cols), min_size=10)))
+	def test_determine_dialect_tab(self, data):
+		file_path = os.path.join(self.temp_dir.name, 'test')
+		reader = Reader(file_path)
+		
+		with open(file_path, 'w', newline='') as f:
+			writer = csv.writer(f, dialect=csv.excel_tab)
+			for line in data:
+				writer.writerow(line)
+		
+		with open(file_path, newline='') as f:
+			lines = f.read().splitlines()
+		
+		res = reader._determine_dialect(lines)
+		self.assertEqual(res.delimiter, '\t')
+		self.assertEqual(res.quotechar, '"')
+		self.assertEqual(res.doublequote, True)
+		self.assertEqual(res.escapechar, None)
 	
 	
 	@given(list_and_index(text(min_size=1)))
@@ -161,46 +229,5 @@ class ReaderTestCase(TestCase):
 		
 		with self.assertRaises(ValueError):
 			[res for res in reader.gen_ipa_data()]
-	
-	
-	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
-				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES),
-						min_size=cols, max_size=cols), min_size=1)))
-	def test_determine_dialect_comma(self, data):
-		file_path = os.path.join(self.temp_dir.name, 'test')
-		reader = Reader(file_path)
-		
-		for dialect in [csv.excel, csv.unix_dialect]:
-			with open(file_path, 'w', newline='') as f:
-				writer = csv.writer(f, dialect=dialect)
-				for line in data:
-					writer.writerow(line)
-			
-			with open(file_path, newline='') as f:
-				lines = f.read().splitlines()
-			
-			res = reader._determine_dialect(lines)
-			self.assertEqual(res[0], ',')
-			self.assertEqual(res[1], '"')
-	
-	
-	@given(integers(min_value=2, max_value=20).flatmap(lambda cols:
-				lists(lists(text(alphabet=CHARS_EXCL_NEWLINES.rstrip('\t')),
-						min_size=cols, max_size=cols), min_size=10)))
-	def test_determine_dialect_tab(self, data):
-		file_path = os.path.join(self.temp_dir.name, 'test')
-		reader = Reader(file_path)
-		
-		with open(file_path, 'w', newline='') as f:
-			writer = csv.writer(f, dialect=csv.excel_tab)
-			for line in data:
-				writer.writerow(line)
-		
-		with open(file_path, newline='') as f:
-			lines = f.read().splitlines()
-		
-		res = reader._determine_dialect(lines)
-		self.assertEqual(res[0], '\t')
-		self.assertEqual(res[1], '"')
 
 

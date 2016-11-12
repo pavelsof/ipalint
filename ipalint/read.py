@@ -1,6 +1,4 @@
-"""
-This module provides the code for reading the datasets which are to be linted.
-"""
+from collections import namedtuple
 
 import csv
 import logging
@@ -25,6 +23,22 @@ CSV_QUOTECHARS = ['"', "'"]
 
 
 """
+List of possible csv escapechars that will be tried when determining the csv
+dialect. None means that the escapechar is the same as the quotechar.
+"""
+CSV_ESCAPECHARS = [None, '\\']
+
+
+
+"""
+List of file extension that are considered identifying tab-separated values; no
+no dialect guessing will take place for these files.
+"""
+TSV_EXTENSIONS = ['tsv', 'tab']
+
+
+
+"""
 List of lower-cased prefixes of common names for the column that contains the
 IPA data.
 """
@@ -32,29 +46,43 @@ IPA_COL_NAMES = ['ipa', 'phon', 'transcription']
 
 
 
+"""
+Contains the parameters to be fed into the csv.reader that will produce the
+lines of the dataset file.
+"""
+Dialect = namedtuple('Dialect',
+		['delimiter', 'quotechar', 'doublequote', 'escapechar'])
+
+
+
 class Reader:
 	"""
-	Knows how to read arbitrary csv/tsv datasets (or at least as arbitrary as
-	csv.Sniffer can recognise).
+	Comprises the code for reading the dataset files which are to be linted.
 	"""
 	
-	def __init__(self, file_path, has_header=True, ipa_col=None):
+	def __init__(self, file_path, has_header=True, ipa_col=None,
+						delimiter=None, quotechar=None, escapechar=None):
 		"""
 		Constructor. Expects the path to the file to be read. Optional args:
 		
 		has_header: whether the first line of the file will be ignored or not;
 		ipa_col: the column from which to extract the IPA data; this could be
 		either the column's index or name, or None (in which case the Reader
-		will try to guess the column).
+		will try to guess the column);
+		delimiter and quotechar: will be used as csv.reader arguments if
+		provided; if None, the Reader will try to guess the dialect.
 		"""
 		self.log = logging.getLogger(__name__)
 		
 		self.file_path = file_path
+		self.is_single_col = False
 		
 		self.has_header = has_header
 		self.ipa_col = ipa_col
 		
-		self.dialect = None
+		self.delimiter = delimiter
+		self.quotechar = quotechar
+		self.escapechar = escapechar
 	
 	
 	def _open(self, file_path=None):
@@ -62,7 +90,7 @@ class Reader:
 		Opens the file specified by the given path. Raises ValueError if there
 		is a problem with opening or reading the file.
 		"""
-		if not file_path:
+		if file_path is None:
 			file_path = self.file_path
 		
 		if not os.path.exists(file_path):
@@ -77,52 +105,70 @@ class Reader:
 		return f
 	
 	
-	def sniff(self):
+	def get_dialect(self):
 		"""
-		Opens the dataset and tries to infer whether the format is csv, tsv, or
-		simply a single column of IPA data. Raises ValueError if unsuccessful.
+		Returns a Dialect named tuple or None if the dataset file comprises a
+		single column of data. If the dialect is not already known, then tries
+		to determine it. Raises ValueError if it fails in the latter case.
+		"""
+		if self.is_single_col:
+			return None
 		
-		In most scenarios, this will be the first time when the file is opened,
-		which can also raises a ValueError.
-		"""
+		if self.delimiter and self.quotechar:
+			return Dialect(self.delimiter, self.quotechar,
+						True if self.escapechar is None else False,
+						self.escapechar)
+		
 		ext = os.path.basename(self.file_path).rsplit('.', maxsplit=1)
 		ext = ext[1].lower() if len(ext) > 1 else None
 		
-		delimiters = '\t' if ext in ['tsv', 'tab'] else ',\t;:'
+		if ext in TSV_EXTENSIONS:
+			self.delimiter = '\t'
+			self.quotechar = '"'
 		
-		f = self._open()
-		
-		try:
-			self.dialect = csv.Sniffer().sniff(f.read(), delimiters=delimiters)
-		except csv.Error as err:
-			self.log.error(str(err))
-			raise ValueError('Could not determine csv dialect')
-		finally:
+		else:
+			f = self._open()
+			lines = f.read().splitlines()
 			f.close()
+			
+			dialect = self._determine_dialect(lines)
+			
+			if dialect is None:
+				self.is_single_col = True
+			else:
+				self.delimiter = dialect.delimiter
+				self.quotechar = dialect.quotechar
+				self.escapechar = dialect.escapechar
 		
-		if ext in ['tsv', 'tab']:
-			self.dialect.quotechar = '"'
-		
-		return self.dialect
+		return self.get_dialect()
 	
 	
 	def _determine_dialect(self, lines):
 		"""
-		Expects a non-empty [] of strings; that would normally be the first few
-		lines of a csv file. Returns the most likely delimiter, quotechar tuple
-		or None if the data seems to form a single column.
+		Expects a non-empty [] of strings; these would normally be the first
+		few lines of a csv file. Returns the most likely Dialect named tuple or
+		None if the data seems to form a single column.
 		
-		Ensures that using the returned delimiter and quotechar, all the lines
-		given will have the same number of columns.
+		Ensures that using the returned dialect, all the lines given will have
+		the same number of columns.
+		
+		Helper for the get_dialect method.
 		"""
+		permuts = [(quotechar, escapechar)
+				for quotechar in CSV_QUOTECHARS
+				for escapechar in CSV_ESCAPECHARS]
+		
 		for delim in CSV_DELIMITERS:
 			counts = [line.count(delim) for line in lines]
 			
 			if min(counts) == 0:
 				continue
 			
-			for quotechar in CSV_QUOTECHARS:
-				reader = csv.reader(lines, delimiter=delim, quotechar=quotechar)
+			for quotechar, escapechar in permuts:
+				doublequote = True if escapechar is None else False
+				
+				reader = csv.reader(lines, delimiter=delim, quotechar=quotechar,
+								doublequote=doublequote, escapechar=escapechar)
 				
 				try:
 					assert len(set([len(line) for line in reader])) == 1
@@ -138,7 +184,7 @@ class Reader:
 		else:
 			return None
 		
-		return delim, quotechar
+		return Dialect(delim, quotechar, doublequote, escapechar)
 	
 	
 	def _get_reader(self, f):
@@ -149,10 +195,13 @@ class Reader:
 		Also, if self.ipa_col is not set, an attempt will be made to infer
 		which the IPA column is. ValueError would be raised otherwise.
 		"""
-		if not self.dialect:
-			self.sniff()
+		dialect = self.get_dialect()
 		
-		reader = csv.reader(f, dialect=self.dialect)
+		reader = csv.reader(f,
+					delimiter = dialect.delimiter,
+					quotechar = dialect.quotechar,
+					doublequote = dialect.doublequote,
+					escapechar = dialect.escapechar)
 		
 		if self.has_header:
 			header = next(reader)
