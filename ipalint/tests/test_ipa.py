@@ -54,6 +54,11 @@ class RecogniserTestCase(TestCase):
 				self.recog._load_common_err_data(path)
 	
 	
+	def test_get_nfc_chars(self):
+		s = self.recog.get_nfc_chars()
+		self.assertEqual(s, set(['ç']))
+	
+	
 	def test_recognise(self):
 		sym, unk = self.recog.recognise('aɪ pʰiː eɪ', 0)
 		self.assertEqual(len(sym), 8)

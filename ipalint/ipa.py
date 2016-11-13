@@ -135,6 +135,26 @@ class Recogniser:
 		return common_err
 	
 	
+	def get_nfc_chars(self):
+		"""
+		Returns the set of IPA symbols that are precomposed (decomposable)
+		chars. These should not be decomposed during string normalisation,
+		because they will not be recognised otherwise.
+		
+		In IPA 2015 there is only one precomposed character: ç, the voiceless
+		palatal fricative.
+		"""
+		ex = []
+		
+		for char in self.ipa.keys():
+			if len(char) == 1:
+				decomp = unicodedata.normalize('NFD', char)
+				if len(decomp) == 2:
+					ex.append(char)
+		
+		return set(ex)
+	
+	
 	def recognise(self, string, line_num):
 		"""
 		Splits the string into chars and distributes these into the buckets of

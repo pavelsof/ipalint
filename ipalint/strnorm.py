@@ -1,3 +1,4 @@
+import functools
 import logging
 import unicodedata
 
@@ -9,11 +10,16 @@ class Normaliser:
 	Unicode's normal form; (2) have whitespace issues.
 	"""
 	
-	def __init__(self):
+	def __init__(self, nfc_chars=[]):
 		"""
-		Constructor. Inits the lists that keep track of the offending strings.
+		Constructor. The optional arg specifies the set of chars that should
+		not be decomposed.
 		"""
 		self.log = logging.getLogger(__name__)
+		
+		self.norm_f = functools.partial(unicodedata.normalize, 'NFD')
+		
+		self.nfc_chars = set(nfc_chars)
 		
 		self.strip_errors = []
 		self.norm_errors = []
@@ -21,16 +27,34 @@ class Normaliser:
 	
 	def normalise(self, string, line_num):
 		"""
-		Applies Unicode normalisation to the given string and collapses the
-		whitespace.
+		Strips the whitespace and applies Unicode normalisation to the given
+		string. The second arg is used as an ID of the string when reporting
+		its lint errors (if such).
 		"""
 		stripped = string.strip()
 		if stripped != string:
 			self.strip_errors.append(line_num)
 		
-		norm = unicodedata.normalize('NFD', stripped)
+		nfc_pos = [index
+					for index, char in enumerate(stripped)
+					if char in self.nfc_chars]
 		
-		if norm != string:
+		parts = []
+		start_pos = 0
+		
+		for pos in nfc_pos:
+			if pos > 0:
+				parts.append(self.norm_f(stripped[start_pos:pos]))
+			
+			parts.append(stripped[pos])
+			start_pos = pos + 1
+		
+		if start_pos < len(stripped):
+			parts.append(self.norm_f(stripped[start_pos:]))
+		
+		norm = ''.join(parts)
+		
+		if norm != stripped:
 			self.norm_errors.append(line_num)
 		
 		return norm

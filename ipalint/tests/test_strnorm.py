@@ -10,14 +10,21 @@ from ipalint.strnorm import Normaliser
 
 
 class NormaliserTestCase(TestCase):
+	
 	def setUp(self):
 		self.norm = Normaliser()
+	
 	
 	@given(text())
 	def test_normalise(self, t):
 		res = self.norm.normalise(t, 0)
+		self.assertEqual(res, unicodedata.normalize('NFD', t.strip()))
+	
+	
+	def test_normalise_cedilla(self):
+		norm = Normaliser(['ç'])
 		
-		self.assertEqual(res.strip(), res)
-		self.assertEqual(unicodedata.normalize('NFD', res), res)
+		res = norm.normalise(' çáç ', 0)
+		self.assertEqual(res, 'çáç')
 
 

@@ -63,8 +63,8 @@ class Core:
 		"""
 		reader = Reader(dataset, has_header=not no_header, ipa_col=col)
 		
-		norm = Normaliser()
 		recog = Recogniser()
+		norm = Normaliser(nfc_chars=recog.get_nfc_chars())
 		
 		for ipa_string, line_num in reader.gen_ipa_data():
 			ipa_string = norm.normalise(ipa_string, line_num)
