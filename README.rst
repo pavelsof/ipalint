@@ -7,8 +7,8 @@ Checks linguistic datasets for IPA errors and inconsistencies. Usage::
     ipalint mydataset
 
 This will either (1) print the IPA errors found in the dataset; (2) print
-nothing, meaning it found no errors; (3) print an error message if it fails to
-read the file. In no case will the input file be modified.
+nothing, meaning it found no errors; or (3) print an error message if it fails
+to read the file. In no case will the input file be modified.
 
 
 optional arguments

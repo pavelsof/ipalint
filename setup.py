@@ -21,13 +21,15 @@ setup(
 		'for IPA errors and inconsistencies'),
 	long_description = README,
 	
+	# url = '',
+	
 	author = 'Pavel Sofroniev',
 	author_email = 'pavelsof@gmail.com',
 	
 	license = 'MIT',
 	
 	classifiers = [
-		'Development Status :: 2 - Pre-Alpha',
+		'Development Status :: 3 - Alpha',
 		'Environment :: Console',
 		'Intended Audience :: Science/Research',
 		'License :: OSI Approved :: MIT License',
@@ -38,9 +40,9 @@ setup(
 	keywords = 'IPA lint',
 	
 	packages = find_packages(),
-	install_requires = [],
+	package_data = {'ipalint': ['data/*', 'tests/fixtures/*']},
 	
-	include_package_data = True,
+	install_requires = [],
 	
 	test_suite = 'ipalint.tests',
 	tests_require = ['hypothesis >= 3.5'],
