@@ -27,11 +27,9 @@ class Cli:
 			'the dataset file to be linted; '
 			'possible formats are csv and tsv/tab'))
 		input_args.add_argument('--col', help=(
-			'specify the column with IPA data; '
-			'this could be an index (e.g. 3 for the 4th column) '
-			'or a column name (if there is a header row); '
-			'generally ipalint should be clever enough '
-			'to infer which the column is'))
+			'specify the column containing the IPA data; '
+			'this could be the column index (starting from 0) '
+			'or the column name (if there is a header row)'))
 		input_args.add_argument('--no-header', action='store_true', help=(
 			'do not skip the first row of the file; '
 			'if this flag is not set, the first row will be skipped'))
