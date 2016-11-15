@@ -215,16 +215,14 @@ class Reader:
 		return Dialect(delim, quotechar, doublequote, escapechar)
 	
 	
-	def _get_reader(self, f):
+	def _get_csv_reader(self, f, dialect):
 		"""
-		Returns a csv.reader for the given file handler. If the file has a
-		header, it already will be gone through.
+		Returns a csv.reader for the given file handler and csv Dialect named
+		tuple. If the file has a header, it already will be gone through.
 		
 		Also, if self.ipa_col is not set, an attempt will be made to infer
 		which the IPA column is. ValueError would be raised otherwise.
 		"""
-		dialect = self.get_dialect()
-		
 		reader = csv.reader(f,
 					delimiter = dialect.delimiter,
 					quotechar = dialect.quotechar,
@@ -287,25 +285,60 @@ class Reader:
 	
 	def gen_ipa_data(self):
 		"""
-		Generator for iterating over the IPA strings found in the file. Yields
-		the IPA data string paired with the respective line number.
+		Generator for iterating over the IPA strings found in the dataset file.
+		Yields the IPA data string paired with the respective line number.
 		"""
+		dialect = self.get_dialect()
 		f = self._open()
 		
 		try:
-			reader = self._get_reader(f)
-			
-			for line in reader:
-				try:
-					datum = line[self.ipa_col]
-				except IndexError:
-					mes = 'Could not find IPA data on line: {}'.format(line)
-					raise ValueError(mes)
-				
-				yield datum, reader.line_num
+			if dialect:
+				for res in self._gen_csv_data(f, dialect):
+					yield res
+			else:
+				for res in self._gen_txt_data(f):
+					yield res
 		
 		finally:
 			f.close()
+	
+	
+	def _gen_csv_data(self, f, dialect):
+		"""
+		Yields (column data, row number) tuples from the given csv file
+		handler, using the given Dialect named tuple instance. Depends on
+		self.ipa_col being correctly set.
+		
+		Helper for the gen_ipa_data method.
+		"""
+		reader = self._get_csv_reader(f, dialect)
+		
+		for line in reader:
+			try:
+				datum = line[self.ipa_col]
+			except IndexError:
+				mes = 'Could not find IPA data on line: {}'.format(line)
+				raise ValueError(mes)
+			
+			yield datum, reader.line_num
+	
+	
+	def _gen_txt_data(self, f):
+		"""
+		Yields (line, line number) tuples from the given file handler. Skips
+		the first line if the self.has_header flag is set.
+		
+		Helper for the gen_ipa_data method.
+		"""
+		reader = iter(f)
+		
+		for line_num, line in enumerate(reader):
+			if line_num == 0 and self.has_header:
+				continue
+			
+			datum = line.rstrip('\r\n')
+			
+			yield datum, line_num+1
 	
 	
 	def __del__(self):

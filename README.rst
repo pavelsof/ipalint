@@ -10,6 +10,13 @@ This will either (1) print the IPA errors found in the dataset; (2) print
 nothing, meaning it found no errors; or (3) print an error message if it fails
 to read the file. In no case will the input file be modified.
 
+The linter should be able to read any well-formed csv/tsv/tab dataset, assuming
+that there is an IPA data column. It also reads table-less lines and handles
+pipes; thus, even if you have a weird format like `this one`_, you can still
+lint it by doing something like::
+
+    cat KSL.qlc | grep "^[[:digit:]]" | cut -f 6 | ipalint
+
 
 optional arguments
 ==================
@@ -63,3 +70,5 @@ licence
 =======
 
 MIT. Do as you please and praise the snake gods.
+
+.. _`this one`: https://github.com/lingpy/lingpy/blob/facf0230c70a23cde3883a6f904445bb965878f8/lingpy/tests/test_data/KSL.qlc

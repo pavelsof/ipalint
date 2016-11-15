@@ -15,8 +15,9 @@ from ipalint.read import IPA_COL_NAMES, Reader
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 
-HAWAIIAN_TSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.tsv')
 HAWAIIAN_CSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.csv')
+HAWAIIAN_TSV_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.tsv')
+HAWAIIAN_TXT_PATH = os.path.join(FIXTURES_DIR, 'hawaiian.txt')
 
 
 
@@ -87,6 +88,10 @@ class ReaderTestCase(TestCase):
 		self.assertEqual(dialect.quotechar, '"')
 		self.assertEqual(dialect.doublequote, True)
 		self.assertEqual(dialect.escapechar, None)
+		
+		reader = Reader(HAWAIIAN_TXT_PATH)
+		dialect = reader.get_dialect()
+		self.assertEqual(dialect, None)
 	
 	
 	def test_determine_dialect(self):
@@ -232,9 +237,13 @@ class ReaderTestCase(TestCase):
 		self.assertEqual(data[209], ('[\'o] au', 211))
 		self.assertEqual(data[245], ('kaukani', 247))
 		
-		reader2 = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
-		data2 = [res for res in reader2.gen_ipa_data()]
-		self.assertEqual(data, data2)
+		reader_tsv = Reader(HAWAIIAN_TSV_PATH, ipa_col=3)
+		data_tsv = [res for res in reader_tsv.gen_ipa_data()]
+		self.assertEqual(data_tsv, data)
+		
+		reader_txt = Reader(HAWAIIAN_TXT_PATH)
+		data_txt = [res for res in reader_txt.gen_ipa_data()]
+		self.assertEqual(data_txt, data)
 	
 	
 	def test_gen_ipa_data_error(self):
