@@ -12,8 +12,8 @@ to read the file. In no case will the input file be modified.
 
 The linter should be able to read any well-formed csv/tsv/tab dataset, assuming
 that there is an IPA data column. It also reads table-less lines and handles
-pipes; thus, even if you have a weird format like `this one`_, you can still
-lint it by doing something like::
+pipes; thus, even if you have a less common format like `this one`_, you can
+still lint it by doing something like::
 
     cat KSL.qlc | grep "^[[:digit:]]" | cut -f 6 | ipalint
 
@@ -62,8 +62,8 @@ Of course, you can install it within a virtualenv/venv as well.
 similar projects
 ================
 
-* `ipapy <https://pypi.python.org/pypi/ipapy>`_ checks and cleans IPA strings.
-* `lingpy <http://lingpy.org/>`_ includes some tools for analysing IPA strings.
+* ipapy_ checks and cleans IPA strings.
+* lingpy_ includes some tools for analysing IPA strings.
 
 
 licence
@@ -72,3 +72,5 @@ licence
 MIT. Do as you please and praise the snake gods.
 
 .. _`this one`: https://github.com/lingpy/lingpy/blob/facf0230c70a23cde3883a6f904445bb965878f8/lingpy/tests/test_data/KSL.qlc
+.. _`ipapy`: https://pypi.python.org/pypi/ipapy
+.. _`lingpy`: http://lingpy.org/
