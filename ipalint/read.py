@@ -4,6 +4,8 @@ import csv
 import logging
 import os.path
 
+from tempfile import TemporaryDirectory
+
 
 
 """
@@ -57,13 +59,14 @@ Dialect = namedtuple('Dialect',
 
 class Reader:
 	"""
-	Comprises the code for reading the dataset files which are to be linted.
+	Comprises the code for reading the dataset file which is to be linted.
 	"""
 	
-	def __init__(self, file_path, has_header=True, ipa_col=None,
+	def __init__(self, dataset, has_header=True, ipa_col=None,
 						delimiter=None, quotechar=None, escapechar=None):
 		"""
-		Constructor. Expects the path to the file to be read. Optional args:
+		Constructor. Expects either the path to the file to be read or an input
+		stream to read from. Optional args:
 		
 		has_header: whether the first line of the file will be ignored or not;
 		ipa_col: the column from which to extract the IPA data; this could be
@@ -73,16 +76,41 @@ class Reader:
 		provided; if None, the Reader will try to guess the dialect.
 		"""
 		self.log = logging.getLogger(__name__)
+		self.temp_dir = None
 		
-		self.file_path = file_path
-		self.is_single_col = False
+		if isinstance(dataset, str):
+			self.file_path = dataset
+		else:
+			self.file_path = self._save_stdin(dataset)
 		
 		self.has_header = has_header
 		self.ipa_col = ipa_col
 		
+		self.is_single_col = False
+		
 		self.delimiter = delimiter
 		self.quotechar = quotechar
 		self.escapechar = escapechar
+	
+	
+	def _save_stdin(self, stdin):
+		"""
+		Creates a temporary dir (self.temp_dir) and saves the given input
+		stream to a file within that dir. Returns the path to the file. The dir
+		is removed in the __del__ method.
+		"""
+		self.temp_dir = TemporaryDirectory()
+		file_path = os.path.join(self.temp_dir.name, 'dataset')
+		
+		try:
+			with open(file_path, 'w') as f:
+				for line in stdin:
+					f.write(line)
+		except TypeError:
+			self.temp_dir.cleanup()
+			raise ValueError('Could not read stdin')
+		
+		return file_path
 	
 	
 	def _open(self, file_path=None):
@@ -278,5 +306,13 @@ class Reader:
 		
 		finally:
 			f.close()
+	
+	
+	def __del__(self):
+		"""
+		Destructor. Removes the temporary directory, if such.
+		"""
+		if self.temp_dir:
+			self.temp_dir.cleanup()
 
 

@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from ipalint.core import Core
 from ipalint import __version__
@@ -23,9 +24,10 @@ class Cli:
 				description=desc, add_help=False)
 		
 		input_args = self.parser.add_argument_group('dataset arguments')
-		input_args.add_argument('dataset', help=(
+		input_args.add_argument('dataset', nargs='?', default=sys.stdin, help=(
 			'the dataset file to be linted; '
-			'possible formats are csv and tsv/tab'))
+			'if omitted, ipalint reads from stdin '
+			'(thus, ipalint X and cat X | ipalint are equivalent)'))
 		input_args.add_argument('--col', help=(
 			'specify the column containing the IPA data; '
 			'this could be the column index (starting from 0) '
