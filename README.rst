@@ -46,6 +46,15 @@ you want a quick glimpse of what might be wrong. This flag is ignored if the
 previous one is set.
 
 
+what is checked
+===============
+
+* Ensures that all the characters of the dataset's IPA strings are in the `IPA
+  chart`_ (the 2015 revision). The only accepted non-IPA character is space.
+* Ensures that the strings conform to Unicode's `Normalisation Form D`_ (NFD).
+* Ensures that the strings do not start or end with unnecessary whitespace.
+
+
 installation
 ============
 
@@ -72,5 +81,7 @@ licence
 MIT. Do as you please and praise the snake gods.
 
 .. _`this one`: https://github.com/lingpy/lingpy/blob/facf0230c70a23cde3883a6f904445bb965878f8/lingpy/tests/test_data/KSL.qlc
+.. _`IPA chart`: https://www.internationalphoneticassociation.org/sites/default/files/phonsymbol.pdf
+.. _`Normalisation Form D`: http://www.unicode.org/reports/tr15/
 .. _`ipapy`: https://pypi.python.org/pypi/ipapy
 .. _`lingpy`: http://lingpy.org/
