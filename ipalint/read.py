@@ -159,7 +159,10 @@ class Reader:
 			lines = f.read().splitlines()
 			f.close()
 			
-			dialect = self._determine_dialect(lines)
+			if lines:
+				dialect = self._determine_dialect(lines)
+			else:
+				dialect = None
 			
 			if dialect is None:
 				self.is_single_col = True

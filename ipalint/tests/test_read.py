@@ -246,6 +246,12 @@ class ReaderTestCase(TestCase):
 		self.assertEqual(data_txt, data)
 	
 	
+	def test_gen_ipa_data_empty(self):
+		reader = Reader([])
+		data = [datum for datum in reader.gen_ipa_data()]
+		self.assertEqual(len(data), 0)
+	
+	
 	def test_gen_ipa_data_error(self):
 		file_path = os.path.join(self.temp_dir.name, 'test')
 		
