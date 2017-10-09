@@ -58,14 +58,17 @@ what is checked
 installation
 ============
 
-This is a standard Python 3 package without dependencies. Even thought it is
-not yet offered in the Cheese Shop, you can install it by cloning this repo
-(you can delete it afterwards) and doing this::
+This is a standard Python 3 package without dependencies. It is offered at `the
+Cheese Shop`_, so you can install it through pip::
+
+    pip3 install ipalint
+
+or, alternatively, you can clone this repo (safe to delete afterwards) and do::
 
     python3 setup.py test
     python3 setup.py install
 
-Of course, you can install it within a virtualenv/venv as well.
+Of course, this could be happening within a virtualenv/venv as well.
 
 
 similar projects
@@ -83,5 +86,6 @@ MIT. Do as you please and praise the snake gods.
 .. _`this one`: https://github.com/lingpy/lingpy/blob/facf0230c70a23cde3883a6f904445bb965878f8/lingpy/tests/test_data/KSL.qlc
 .. _`IPA chart`: https://www.internationalphoneticassociation.org/sites/default/files/phonsymbol.pdf
 .. _`Normalisation Form D`: http://www.unicode.org/reports/tr15/
+.. _`the Cheese Shop`: https://pypi.python.org/pypi/ipalint
 .. _`ipapy`: https://pypi.python.org/pypi/ipapy
 .. _`lingpy`: http://lingpy.org/
