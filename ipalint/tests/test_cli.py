@@ -12,10 +12,10 @@ from ipalint.core import Core
 
 
 class CliTestCase(TestCase):
-	
+
 	def setUp(self):
 		self.cli = Cli()
-	
+
 	@given(text().filter(lambda t: not t.startswith('-')),
 			text().filter(lambda t: not t.startswith('-')),
 			fixed_dictionaries({
@@ -28,14 +28,14 @@ class CliTestCase(TestCase):
 		args = [dataset]
 		if col: args.extend(['--col', col])
 		args.extend([flag for flag in flags.values() if flag])
-		
+
 		with patch.object(Core, 'lint', return_value='42') as mock_lint:
 			with patch.object(sys.stdout, 'write'):
 				try:
 					self.cli.run(args)
 				except SystemExit:
 					pass
-				
+
 				mock_lint.assert_called_once_with(
 					dataset = dataset,
 					col = col if col else None,
@@ -44,5 +44,3 @@ class CliTestCase(TestCase):
 					ignore_ws = True if flags['ignore_ws'] else False,
 					linewise = True if flags['linewise'] else False,
 					no_lines = True if flags['no_lines'] else False)
-
-

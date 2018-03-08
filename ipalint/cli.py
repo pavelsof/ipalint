@@ -11,7 +11,7 @@ class Cli:
 	Singleton that handles the user input, inits the whole machinery, and takes
 	care of exiting the programme.
 	"""
-	
+
 	def __init__(self):
 		"""
 		Constructor. Inits the argparse parser.
@@ -19,10 +19,10 @@ class Cli:
 		usage = 'ipalint dataset [options]'
 		desc = ('simple linter that checks datasets for '
 				'IPA errors and inconsistencies')
-		
+
 		self.parser = argparse.ArgumentParser(usage=usage,
 				description=desc, add_help=False)
-		
+
 		input_args = self.parser.add_argument_group('dataset arguments')
 		input_args.add_argument('dataset', nargs='?', default=sys.stdin, help=(
 			'the dataset file to be linted; '
@@ -35,7 +35,7 @@ class Cli:
 		input_args.add_argument('--no-header', action='store_true', help=(
 			'do not skip the first row of the file; '
 			'if this flag is not set, the first row will be skipped'))
-		
+
 		output_args = self.parser.add_argument_group('output arguments')
 		output_args.add_argument('--ignore-nfd', action='store_true', help=(
 			'ignore warnings about strings that are not compliant with '
@@ -51,15 +51,15 @@ class Cli:
 			'only show the error messages, '
 			'without the line numbers where the errors originate; '
 			'ignored if --linewise is set'))
-		
+
 		meta_args = self.parser.add_argument_group('meta arguments')
 		meta_args.add_argument('-h', '--help', action='help', help=(
 			'show this help message and exit'))
 		meta_args.add_argument('-v', '--version', action='version',
 			version=__version__,
 			help='show the version number and exit')
-	
-	
+
+
 	def run(self, raw_args=None):
 		"""
 		Parses the given arguments (if these are None, then argparse's parser
@@ -67,14 +67,14 @@ class Cli:
 		method with the respective arguments, and then exits.
 		"""
 		args = self.parser.parse_args(raw_args)
-		
+
 		core = Core()
-		
+
 		try:
 			report = core.lint(**vars(args))
 		except Exception as err:
 			self.parser.error(str(err))
-		
+
 		print(report)
 		self.parser.exit()
 
@@ -87,5 +87,3 @@ def main():
 	"""
 	cli = Cli()
 	cli.run()
-
-

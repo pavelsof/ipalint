@@ -39,22 +39,22 @@ class Core:
 	The controller singleton, an instance of which should be always present.
 	This is what stays behind the cli and orchestrates the other modules.
 	"""
-	
+
 	def __init__(self, verbose=False):
 		"""
 		Constructor. Configures the logging. The verbosity flag determines
 		whether the min log level would be DEBUG or INFO.
 		"""
 		config = dict(DEFAULT_LOGGING)
-		
+
 		if verbose:
 			config['root']['level'] = logging.DEBUG
-		
+
 		logging.config.dictConfig(config)
-		
+
 		self.log = logging.getLogger(__name__)
-	
-	
+
+
 	def lint(self, dataset=None, col=None, no_header=False,
 				ignore_nfd=False, ignore_ws=False, linewise=False, no_lines=False):
 		"""
@@ -62,18 +62,16 @@ class Core:
 		defined by the given file path.
 		"""
 		reader = Reader(dataset, has_header=not no_header, ipa_col=col)
-		
+
 		recog = Recogniser()
 		norm = Normaliser(nfc_chars=recog.get_nfc_chars())
-		
+
 		for ipa_string, line_num in reader.gen_ipa_data():
 			ipa_string = norm.normalise(ipa_string, line_num)
 			recog.recognise(ipa_string, line_num)
-		
+
 		rep = Reporter()
 		norm.report(rep, ignore_nfd, ignore_ws)
 		recog.report(rep)
-		
+
 		return rep.get_report(linewise, no_lines)
-
-
